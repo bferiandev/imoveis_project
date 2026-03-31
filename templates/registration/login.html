@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entrar — Painel Rafael Moura Imóveis</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Jost',sans-serif;background:#0a0a0a;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.login-wrap{width:100%;max-width:420px;padding:1rem}
+.login-box{background:#fff;padding:3rem 2.5rem}
+.login-logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;color:#141414;margin-bottom:0.25rem}
+.login-logo span{color:#b8974a}
+.login-sub{font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:#aaa;margin-bottom:2.5rem}
+.form-group{margin-bottom:1.2rem}
+.form-label{display:block;font-size:0.7rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#666;margin-bottom:0.4rem}
+.form-control{width:100%;padding:0.8rem 1rem;border:1px solid #e8e8e8;background:#fafafa;font-family:'Jost',sans-serif;font-size:0.88rem;outline:none;transition:all 0.2s}
+.form-control:focus{border-color:#b8974a;background:#fff;box-shadow:0 0 0 3px rgba(184,151,74,0.1)}
+.btn-login{width:100%;padding:0.95rem;background:#141414;color:#fff;border:none;font-family:'Jost',sans-serif;font-size:0.78rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;margin-top:0.5rem}
+.btn-login:hover{background:#b8974a;color:#000}
+.error-msg{color:#c0392b;font-size:0.78rem;margin-top:0.3rem}
+.login-footer{text-align:center;margin-top:1.5rem;font-size:0.72rem;color:#aaa}
+.divider{width:30px;height:1px;background:#b8974a;margin:1.5rem 0}
+</style>
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-box">
+    <div class="login-logo">Rafael Moura <span>Imóveis</span></div>
+    <div class="login-sub">Painel Administrativo</div>
+    <div class="divider"></div>
+
+    {% if form.errors %}
+    <div style="background:#fdf0ef;border-left:3px solid #c0392b;padding:0.75rem 1rem;margin-bottom:1.5rem;font-size:0.82rem;color:#922b21">
+      Usuário ou senha incorretos. Tente novamente.
+    </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+      <div class="form-group">
+        <label class="form-label">Usuário</label>
+        <input type="text" name="username" class="form-control" autofocus placeholder="seu_usuario" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Senha</label>
+        <input type="password" name="password" class="form-control" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn-login">Entrar no painel →</button>
+    </form>
+
+    <div class="login-footer">
+      <a href="/" style="color:#b8974a">← Voltar ao site</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

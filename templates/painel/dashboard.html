@@ -1,0 +1,148 @@
+{% extends "painel/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'painel:imovel_create' %}" class="topbar-btn btn-gold">＋ Novo Imóvel</a>
+{% endblock %}
+
+{% block content %}
+
+<!-- STAT CARDS -->
+<div class="stats-grid">
+  <div class="stat-card gold-accent" data-icon="⌂">
+    <div class="stat-label">Imóveis ativos</div>
+    <div class="stat-value">{{ total_imoveis }}</div>
+    <div class="stat-sub">{{ imoveis_disponiveis }} disponíveis</div>
+  </div>
+  <div class="stat-card green-accent" data-icon="✓">
+    <div class="stat-label">Vendidos</div>
+    <div class="stat-value">{{ imoveis_vendidos }}</div>
+    <div class="stat-sub">no total</div>
+  </div>
+  <div class="stat-card blue-accent" data-icon="◎">
+    <div class="stat-label">Total de leads</div>
+    <div class="stat-value">{{ total_leads }}</div>
+    <div class="stat-sub">{{ leads_novos }} novos aguardando</div>
+  </div>
+  <div class="stat-card red-accent" data-icon="!">
+    <div class="stat-label">Leads novos</div>
+    <div class="stat-value">{{ leads_novos }}</div>
+    <div class="stat-sub">precisam de atenção</div>
+  </div>
+</div>
+
+<!-- TWO COLUMNS -->
+<div style="display:grid;grid-template-columns:1fr 380px;gap:1.5rem;align-items:start">
+
+  <!-- RECENT PROPERTIES -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-header-title">Imóveis recentes</span>
+      <a href="{% url 'painel:imovel_list' %}" style="font-size:0.75rem;color:#b8974a">Ver todos →</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Foto</th>
+            <th>Título</th>
+            <th>Tipo</th>
+            <th>Preço</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in imoveis_recentes %}
+          <tr>
+            <td style="width:56px">
+              {% if i.foto_principal %}
+              <img src="{{ i.foto_principal.imagem.url }}" style="width:48px;height:36px;object-fit:cover;display:block">
+              {% else %}
+              <div style="width:48px;height:36px;background:#f4f4f4;display:flex;align-items:center;justify-content:center;font-size:1.1rem">⌂</div>
+              {% endif %}
+            </td>
+            <td style="max-width:220px">
+              <div style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ i.titulo }}</div>
+              <div style="font-size:0.72rem;color:#aaa">{{ i.bairro }}{% if i.cidade %}, {{ i.cidade.nome }}{% endif %}</div>
+            </td>
+            <td><span class="badge badge-gray">{{ i.get_tipo_display }}</span></td>
+            <td style="font-weight:600;white-space:nowrap">{{ i.preco_formatado }}</td>
+            <td>
+              {% if i.status == 'disponivel' %}<span class="badge badge-green">Disponível</span>
+              {% elif i.status == 'vendido' %}<span class="badge badge-red">Vendido</span>
+              {% elif i.status == 'reservado' %}<span class="badge badge-orange">Reservado</span>
+              {% else %}<span class="badge badge-gray">{{ i.get_status_display }}</span>{% endif %}
+            </td>
+            <td>
+              <div class="actions">
+                <a href="{% url 'painel:imovel_edit' i.pk %}" class="action-btn" title="Editar">✎</a>
+                <a href="{% url 'painel:imovel_fotos' i.pk %}" class="action-btn" title="Fotos">🖼</a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" style="text-align:center;color:#aaa;padding:2rem">Nenhum imóvel cadastrado ainda.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div style="display:flex;flex-direction:column;gap:1.5rem">
+
+    <!-- RECENT LEADS -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-header-title">Leads recentes</span>
+        <a href="{% url 'painel:lead_list' %}" style="font-size:0.75rem;color:#b8974a">Ver todos →</a>
+      </div>
+      <div style="padding:0">
+        {% for lead in leads_recentes %}
+        <a href="{% url 'painel:lead_detail' lead.pk %}"
+           style="display:flex;align-items:center;gap:0.85rem;padding:0.9rem 1.2rem;border-bottom:1px solid #f4f4f4;transition:background 0.2s"
+           onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background=''">
+          <div style="width:36px;height:36px;border-radius:50%;background:{% if lead.status == 'novo' %}#edfaf4{% else %}#f4f4f4{% endif %};display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0">
+            {% if lead.status == 'novo' %}🔔{% else %}◎{% endif %}
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:500;font-size:0.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ lead.nome }}</div>
+            <div style="font-size:0.72rem;color:#aaa">{{ lead.get_interesse_display }} · {{ lead.criado_em|timesince }} atrás</div>
+          </div>
+          {% if lead.status == 'novo' %}
+          <span class="badge badge-green" style="flex-shrink:0">Novo</span>
+          {% endif %}
+        </a>
+        {% empty %}
+        <div style="padding:2rem;text-align:center;color:#aaa;font-size:0.82rem">Nenhum lead ainda.</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- PORTFOLIO BY TYPE -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-header-title">Portfólio por tipo</span>
+      </div>
+      <div class="card-body">
+        {% for item in por_tipo %}
+        <div style="margin-bottom:1rem">
+          <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem">
+            <span style="font-size:0.8rem;font-weight:500">{{ item.tipo|title }}</span>
+            <span style="font-size:0.78rem;color:#aaa">{{ item.total }}</span>
+          </div>
+          <div style="background:#f4f4f4;height:6px;border-radius:3px">
+            <div style="background:#b8974a;height:6px;border-radius:3px;width:{% widthratio item.total total_imoveis 100 %}%"></div>
+          </div>
+        </div>
+        {% empty %}
+        <div style="color:#aaa;font-size:0.82rem">Sem dados.</div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,246 @@
+{% extends "painel/base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'painel:imovel_list' %}" class="topbar-btn btn-outline-dark">← Voltar</a>
+{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" id="imovelForm">
+  {% csrf_token %}
+
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:1.5rem;align-items:start">
+
+    <!-- LEFT: MAIN FIELDS -->
+    <div style="display:flex;flex-direction:column;gap:1.5rem">
+
+      <!-- Identificação -->
+      <div class="card">
+        <div class="card-header"><span class="card-header-title">Identificação</span></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label class="form-label">Título do imóvel *</label>
+              {{ form.titulo }}
+              {% if form.titulo.errors %}<ul class="errorlist">{% for e in form.titulo.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tipo</label>
+              {{ form.tipo }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              {{ form.status }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Destaque</label>
+              {{ form.destaque }}
+            </div>
+            <div class="form-group" style="display:flex;align-items:center;gap:0.5rem;margin-top:1.5rem">
+              {{ form.ativo }}
+              <label class="form-check-label" for="{{ form.ativo.id_for_label }}">Visível no site</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Localização -->
+      <div class="card">
+        <div class="card-header"><span class="card-header-title">Localização</span></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Cidade</label>
+              {{ form.cidade }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Bairro</label>
+              {{ form.bairro }}
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Endereço</label>
+              {{ form.endereco }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">CEP</label>
+              {{ form.cep }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Descrição -->
+      <div class="card">
+        <div class="card-header"><span class="card-header-title">Descrição</span></div>
+        <div class="card-body">
+          <div class="form-group" style="margin-bottom:1.2rem">
+            <label class="form-label">Descrição completa *</label>
+            {{ form.descricao }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Diferenciais / Características</label>
+            {{ form.diferenciais }}
+            <span class="form-help">{{ form.diferenciais.help_text }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEO -->
+      <div class="card">
+        <div class="card-header"><span class="card-header-title">SEO</span></div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Meta descrição (Google)</label>
+            {{ form.meta_descricao }}
+            <span class="form-help">Até 160 caracteres. Aparece nos resultados de busca.</span>
+            <div id="metaCount" style="font-size:0.72rem;color:#aaa;margin-top:0.2rem"></div>
+          </div>
+        </div>
+      </div>
+
+      {% if not imovel %}
+      <!-- Fotos iniciais -->
+      <div class="card">
+        <div class="card-header"><span class="card-header-title">Fotos iniciais</span></div>
+        <div class="card-body">
+          <label class="upload-zone" id="uploadZone">
+            <input type="file" name="fotos" id="fotosInput" multiple accept="image/*">
+            <div class="upload-icon">🖼</div>
+            <div class="upload-text">Clique ou arraste as fotos aqui</div>
+            <div class="upload-sub">JPG, PNG, WEBP · Máx. 5MB por foto · Primeira será a principal</div>
+          </label>
+          <div class="preview-grid" id="previewGrid"></div>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+
+    <!-- RIGHT: PRICE + SPECS -->
+    <div style="display:flex;flex-direction:column;gap:1.5rem;position:sticky;top:80px">
+
+      <!-- Preço -->
+      <div class="card">
+        <div class="card-header"><span class="card-header-title">Valores</span></div>
+        <div class="card-body">
+          <div class="form-group" style="margin-bottom:1rem">
+            <label class="form-label">Preço de venda (R$) *</label>
+            {{ form.preco }}
+            {% if form.preco.errors %}<ul class="errorlist">{% for e in form.preco.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+          </div>
+          <div class="form-group" style="margin-bottom:1rem">
+            <label class="form-label">Condomínio (R$/mês)</label>
+            {{ form.condominio }}
+          </div>
+          <div class="form-group" style="margin-bottom:1rem">
+            <label class="form-label">IPTU (R$/mês)</label>
+            {{ form.iptu }}
+          </div>
+          <div class="form-check" style="margin-top:0.5rem">
+            {{ form.preco_negociavel }}
+            <label class="form-check-label" for="{{ form.preco_negociavel.id_for_label }}">Preço negociável</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Características -->
+      <div class="card">
+        <div class="card-header"><span class="card-header-title">Características</span></div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.9rem">
+            <div class="form-group">
+              <label class="form-label">Área total (m²)</label>
+              {{ form.area_total }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Área construída (m²)</label>
+              {{ form.area_construida }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Quartos</label>
+              {{ form.quartos }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Suítes</label>
+              {{ form.suites }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Banheiros</label>
+              {{ form.banheiros }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Vagas</label>
+              {{ form.vagas }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Andar</label>
+              {{ form.andar }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SAVE -->
+      <button type="submit" class="topbar-btn btn-gold" style="width:100%;justify-content:center;padding:0.9rem;font-size:0.8rem">
+        {% if imovel %}💾 Salvar alterações{% else %}✓ Criar imóvel{% endif %}
+      </button>
+      {% if imovel %}
+      <a href="{% url 'painel:imovel_fotos' imovel.pk %}" class="topbar-btn btn-outline-dark" style="width:100%;justify-content:center;padding:0.9rem;font-size:0.8rem;margin-top:-0.8rem">
+        🖼 Gerenciar fotos
+      </a>
+      {% endif %}
+    </div>
+
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Meta description counter
+const metaField = document.getElementById('{{ form.meta_descricao.id_for_label }}');
+const metaCount = document.getElementById('metaCount');
+if (metaField && metaCount) {
+  const update = () => {
+    const len = metaField.value.length;
+    metaCount.textContent = `${len}/160 caracteres`;
+    metaCount.style.color = len > 160 ? '#c0392b' : '#aaa';
+  };
+  metaField.addEventListener('input', update);
+  update();
+}
+
+// Photo preview
+const input = document.getElementById('fotosInput');
+const previewGrid = document.getElementById('previewGrid');
+const uploadZone = document.getElementById('uploadZone');
+
+if (input) {
+  input.addEventListener('change', showPreviews);
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+    input.files = e.dataTransfer.files;
+    showPreviews();
+  });
+}
+
+function showPreviews() {
+  previewGrid.innerHTML = '';
+  Array.from(input.files).forEach((file, i) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const div = document.createElement('div');
+      div.className = 'preview-thumb';
+      div.innerHTML = `<img src="${e.target.result}" alt="${file.name}">
+        ${i === 0 ? '<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(184,151,74,0.9);color:#000;font-size:0.62rem;font-weight:700;text-align:center;padding:2px;letter-spacing:0.06em">PRINCIPAL</div>' : ''}`;
+      previewGrid.appendChild(div);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+</script>
+{% endblock %}

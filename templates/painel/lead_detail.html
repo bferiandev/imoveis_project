@@ -1,0 +1,151 @@
+{% extends "painel/base.html" %}
+{% block title %}Lead: {{ lead.nome }}{% endblock %}
+{% block page_title %}Detalhes do Lead{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ lead.whatsapp_link }}" target="_blank" class="topbar-btn btn-success">💬 WhatsApp</a>
+<a href="{% url 'painel:lead_list' %}" class="topbar-btn btn-outline-dark">← Voltar</a>
+{% endblock %}
+
+{% block content %}
+<div style="display:grid;grid-template-columns:1fr 320px;gap:1.5rem;align-items:start">
+
+  <!-- LEFT -->
+  <div style="display:flex;flex-direction:column;gap:1.5rem">
+
+    <!-- LEAD INFO -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-header-title">Informações do contato</span>
+        {% if lead.status == 'novo' %}<span class="badge badge-green">Novo</span>
+        {% elif lead.status == 'em_contato' %}<span class="badge badge-blue">Em contato</span>
+        {% elif lead.status == 'negociando' %}<span class="badge badge-orange">Negociando</span>
+        {% elif lead.status == 'convertido' %}<span class="badge badge-gold">Convertido</span>
+        {% elif lead.status == 'perdido' %}<span class="badge badge-red">Perdido</span>{% endif %}
+      </div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
+          <div>
+            <div class="form-label" style="margin-bottom:0.3rem">Nome</div>
+            <div style="font-weight:600;font-size:1rem">{{ lead.nome }}</div>
+          </div>
+          <div>
+            <div class="form-label" style="margin-bottom:0.3rem">Telefone</div>
+            <div style="font-weight:600">{{ lead.telefone }}</div>
+          </div>
+          {% if lead.email %}
+          <div>
+            <div class="form-label" style="margin-bottom:0.3rem">E-mail</div>
+            <div>{{ lead.email }}</div>
+          </div>
+          {% endif %}
+          <div>
+            <div class="form-label" style="margin-bottom:0.3rem">Interesse</div>
+            <div><span class="badge badge-gray">{{ lead.get_interesse_display }}</span></div>
+          </div>
+          <div>
+            <div class="form-label" style="margin-bottom:0.3rem">Recebido em</div>
+            <div style="font-size:0.85rem">{{ lead.criado_em|date:"d/m/Y \à\s H:i" }}</div>
+          </div>
+          {% if lead.imovel %}
+          <div>
+            <div class="form-label" style="margin-bottom:0.3rem">Imóvel de interesse</div>
+            <a href="{% url 'painel:imovel_edit' lead.imovel.pk %}" style="color:#b8974a;font-size:0.85rem">{{ lead.imovel.titulo }}</a>
+          </div>
+          {% endif %}
+        </div>
+
+        {% if lead.mensagem %}
+        <div style="margin-top:1.5rem;padding:1.2rem;background:#fafafa;border-left:3px solid #b8974a">
+          <div class="form-label" style="margin-bottom:0.5rem">Mensagem</div>
+          <p style="font-size:0.88rem;line-height:1.6;color:#444">{{ lead.mensagem }}</p>
+        </div>
+        {% endif %}
+
+        <div style="margin-top:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap">
+          <a href="{{ lead.whatsapp_link }}" target="_blank"
+             style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.65rem 1.4rem;background:#25d366;color:white;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase">
+            💬 Abrir WhatsApp
+          </a>
+          {% if lead.email %}
+          <a href="mailto:{{ lead.email }}"
+             style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.65rem 1.4rem;border:1px solid #e8e8e8;color:#333;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase">
+            ✉ Enviar e-mail
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="card">
+      <div class="card-header"><span class="card-header-title">Anotações internas</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="status" value="{{ lead.status }}" id="hiddenStatus">
+          <div class="form-group" style="margin-bottom:1rem">
+            <textarea name="anotacoes" class="form-control" rows="6"
+              placeholder="Registre aqui suas interações, observações e próximos passos com este lead...">{{ lead.anotacoes }}</textarea>
+          </div>
+          <button type="submit" class="topbar-btn btn-gold">💾 Salvar anotações</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: STATUS -->
+  <div style="position:sticky;top:80px">
+    <div class="card">
+      <div class="card-header"><span class="card-header-title">Alterar status</span></div>
+      <div class="card-body" style="padding:1rem">
+        {% for val, label in status_choices %}
+        <button onclick="setStatus('{{ val }}')"
+          style="display:flex;align-items:center;gap:0.75rem;width:100%;padding:0.85rem 1rem;border:1px solid {% if lead.status == val %}#b8974a{% else %}#e8e8e8{% endif %};background:{% if lead.status == val %}#f9f4eb{% else %}#fff{% endif %};cursor:pointer;margin-bottom:0.5rem;text-align:left;transition:all 0.2s;font-family:var(--font-sans)">
+          <span style="font-size:1rem">
+            {% if val == 'novo' %}🔔
+            {% elif val == 'em_contato' %}📞
+            {% elif val == 'negociando' %}🤝
+            {% elif val == 'convertido' %}✅
+            {% else %}❌{% endif %}
+          </span>
+          <span style="font-size:0.82rem;font-weight:{% if lead.status == val %}600{% else %}400{% endif %}">{{ label }}</span>
+          {% if lead.status == val %}<span style="margin-left:auto;color:#b8974a;font-size:0.8rem">✓</span>{% endif %}
+        </button>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if lead.imovel and lead.imovel.foto_principal %}
+    <div class="card" style="margin-top:1.5rem">
+      <div class="card-header"><span class="card-header-title">Imóvel de interesse</span></div>
+      <img src="{{ lead.imovel.foto_principal.imagem.url }}" style="width:100%;height:160px;object-fit:cover;display:block">
+      <div style="padding:1rem">
+        <div style="font-weight:600;font-size:0.88rem;margin-bottom:0.3rem">{{ lead.imovel.titulo }}</div>
+        <div style="font-size:0.82rem;color:#b8974a;font-weight:600">{{ lead.imovel.preco_formatado }}</div>
+        <a href="{% url 'painel:imovel_edit' lead.imovel.pk %}" style="display:block;margin-top:0.75rem;font-size:0.75rem;color:#aaa">Ver imóvel →</a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function setStatus(status) {
+  fetch("{% url 'painel:lead_status' lead.pk %}", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': '{{ csrf_token }}'
+    },
+    body: JSON.stringify({ status })
+  }).then(r => r.json()).then(d => {
+    if (d.ok) location.reload();
+  });
+}
+</script>
+{% endblock %}

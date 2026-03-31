@@ -1,0 +1,143 @@
+{% extends "painel/base.html" %}
+{% block title %}Fotos — {{ imovel.titulo }}{% endblock %}
+{% block page_title %}Fotos do imóvel{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'painel:imovel_edit' imovel.pk %}" class="topbar-btn btn-outline-dark">← Editar dados</a>
+<a href="{% url 'painel:imovel_list' %}" class="topbar-btn btn-outline-dark">Lista de imóveis</a>
+{% endblock %}
+
+{% block content %}
+
+<!-- PROPERTY HEADER -->
+<div style="background:#fff;border:1px solid #e8e8e8;padding:1.2rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem">
+  {% if imovel.foto_principal %}
+  <img src="{{ imovel.foto_principal.imagem.url }}" style="width:64px;height:48px;object-fit:cover">
+  {% endif %}
+  <div>
+    <div style="font-weight:600;font-size:0.95rem">{{ imovel.titulo }}</div>
+    <div style="font-size:0.78rem;color:#aaa">{{ imovel.preco_formatado }}
+      {% if imovel.cidade %} · {{ imovel.cidade.nome }}{% endif %}
+      · {{ imovel.fotos.count }} foto{{ imovel.fotos.count|pluralize:"","s" }}
+    </div>
+  </div>
+</div>
+
+<!-- UPLOAD NEW -->
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-header"><span class="card-header-title">Adicionar fotos</span></div>
+  <div class="card-body">
+    <form method="post" enctype="multipart/form-data" id="uploadForm">
+      {% csrf_token %}
+      <label class="upload-zone" id="uploadZone">
+        <input type="file" name="fotos" id="fotosInput" multiple accept="image/*">
+        <div class="upload-icon">📷</div>
+        <div class="upload-text">Clique ou arraste fotos aqui</div>
+        <div class="upload-sub">JPG, PNG, WEBP · Múltiplas permitidas · Máx. 5MB por foto</div>
+      </label>
+      <div class="preview-grid" id="previewGrid"></div>
+      <div id="uploadActions" style="display:none;margin-top:1rem">
+        <button type="submit" class="topbar-btn btn-gold" id="submitBtn">
+          ⬆ Enviar fotos selecionadas
+        </button>
+        <button type="button" class="topbar-btn btn-outline-dark" onclick="clearSelection()" style="margin-left:0.5rem">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- EXISTING PHOTOS -->
+<div class="card">
+  <div class="card-header">
+    <span class="card-header-title">Galeria ({{ imovel.fotos.count }} foto{{ imovel.fotos.count|pluralize:"","s" }})</span>
+    <span style="font-size:0.75rem;color:#aaa">A foto marcada como principal aparece como capa no site</span>
+  </div>
+  <div class="card-body">
+    {% if imovel.fotos.all %}
+    <div class="photo-grid">
+      {% for foto in imovel.fotos.all %}
+      <div class="photo-item">
+        {% if foto.principal %}<div class="photo-badge-main">★ Principal</div>{% endif %}
+        <img src="{{ foto.imagem.url }}" alt="{{ foto.legenda|default:imovel.titulo }}">
+        <div class="photo-item-actions">
+          {% if not foto.principal %}
+          <form method="post" action="{% url 'painel:foto_principal' foto.pk %}" style="flex:1">
+            {% csrf_token %}
+            <button type="submit" class="photo-action set-main" title="Tornar principal">★ Principal</button>
+          </form>
+          {% else %}
+          <span class="photo-action" style="cursor:default;color:#b8974a">★ Principal</span>
+          {% endif %}
+          <form method="post" action="{% url 'painel:foto_delete' foto.pk %}"
+                onsubmit="return confirm('Excluir esta foto?')" style="flex:1">
+            {% csrf_token %}
+            <button type="submit" class="photo-action del-photo">✕ Excluir</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:3rem;color:#aaa">
+      <div style="font-size:3rem;margin-bottom:0.5rem">📷</div>
+      Nenhuma foto cadastrada ainda.<br>
+      <span style="font-size:0.82rem">Use o formulário acima para adicionar.</span>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const input = document.getElementById('fotosInput');
+const previewGrid = document.getElementById('previewGrid');
+const uploadZone = document.getElementById('uploadZone');
+const uploadActions = document.getElementById('uploadActions');
+const submitBtn = document.getElementById('submitBtn');
+
+input.addEventListener('change', showPreviews);
+
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  input.files = e.dataTransfer.files;
+  showPreviews();
+});
+
+function showPreviews() {
+  previewGrid.innerHTML = '';
+  const files = Array.from(input.files);
+  if (files.length === 0) { uploadActions.style.display = 'none'; return; }
+  uploadActions.style.display = 'block';
+  submitBtn.textContent = `⬆ Enviar ${files.length} foto${files.length > 1 ? 's' : ''}`;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const div = document.createElement('div');
+      div.className = 'preview-thumb';
+      div.innerHTML = `<img src="${e.target.result}" alt="${file.name}">`;
+      previewGrid.appendChild(div);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function clearSelection() {
+  input.value = '';
+  previewGrid.innerHTML = '';
+  uploadActions.style.display = 'none';
+}
+
+// Show loader on submit
+document.getElementById('uploadForm').addEventListener('submit', () => {
+  submitBtn.textContent = '⏳ Enviando...';
+  submitBtn.disabled = true;
+});
+</script>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "core/base.html" %}
+{% block title %}Sobre · Rafael Moura Imóveis{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-hero{background:var(--dark);padding:10rem 0 5rem;text-align:center}
+.page-hero .section-label{display:block;text-align:center}
+.page-hero h1{font-family:var(--font-serif);font-size:clamp(2.5rem,4vw,3.5rem);font-weight:300;color:var(--white)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;padding:6rem 0}
+.about-img{width:100%;aspect-ratio:3/4;object-fit:cover}
+.creci-badge{display:inline-flex;align-items:center;gap:0.5rem;background:var(--gold-pale);padding:0.6rem 1.2rem;font-size:0.8rem;font-weight:600;color:#333;margin-bottom:1.5rem}
+.creci-badge span{color:var(--gold)}
+.diffs{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem}
+.diff{display:flex;gap:1rem}
+.diff-icon{width:40px;height:40px;min-width:40px;background:var(--gold-pale);display:flex;align-items:center;justify-content:center;font-size:1rem}
+.diff-title{font-size:0.88rem;font-weight:600;color:var(--dark);margin-bottom:0.2rem}
+.diff-desc{font-size:0.8rem;color:var(--gray-500);line-height:1.5}
+@media(max-width:900px){.about-grid{grid-template-columns:1fr}.diffs{grid-template-columns:1fr}}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="container">
+    <span class="section-label">Conheça o corretor</span>
+    <h1>{{ BROKER_NAME }}</h1>
+  </div>
+</div>
+
+<div class="container">
+  <div class="about-grid">
+    <div class="fade-up">
+      <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=700&q=80" alt="{{ BROKER_NAME }}" class="about-img">
+    </div>
+    <div class="fade-up">
+      <span class="section-label">Sobre mim</span>
+      <h2 class="section-title">{{ BROKER_NAME }}, seu parceiro no mercado imobiliário</h2>
+      <div class="divider"></div>
+      <div class="creci-badge">✦ <span>CRECI Nº {{ BROKER_CRECI }}</span> · Credenciado COFECI</div>
+      <p style="font-size:0.95rem;color:var(--gray-700);line-height:1.8;margin-bottom:1rem">
+        Com mais de 12 anos de atuação no mercado imobiliário de alto padrão em São Paulo e região, construí uma reputação sólida baseada em transparência, resultado e atendimento exclusivo.
+      </p>
+      <p style="font-size:0.95rem;color:var(--gray-700);line-height:1.8;margin-bottom:2rem">
+        Especialista em imóveis residenciais e comerciais de luxo, já auxiliei mais de 350 famílias e investidores a realizarem negócios seguros e vantajosos. Cada cliente recebe atenção personalizada do início ao fim da negociação.
+      </p>
+      <div class="diffs">
+        <div class="diff"><div class="diff-icon">🏆</div><div><div class="diff-title">Alto padrão</div><div class="diff-desc">Especialista em imóveis premium e de luxo.</div></div></div>
+        <div class="diff"><div class="diff-icon">🤝</div><div><div class="diff-title">Atendimento direto</div><div class="diff-desc">Você fala diretamente comigo, sem intermediários.</div></div></div>
+        <div class="diff"><div class="diff-icon">🔍</div><div><div class="diff-title">Transparência total</div><div class="diff-desc">Negociações claras e sem surpresas.</div></div></div>
+        <div class="diff"><div class="diff-icon">📋</div><div><div class="diff-title">Documentação segura</div><div class="diff-desc">Suporte completo em toda a burocracia.</div></div></div>
+      </div>
+      <a href="https://wa.me/{{ WHATSAPP_NUMBER }}" target="_blank" class="btn-primary" style="margin-top:2.5rem;display:inline-flex">Agendar uma conversa →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

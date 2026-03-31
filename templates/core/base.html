@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="{% block meta_desc %}Ferian e Tavares — Corretores premium com atendimento personalizado.{% endblock %}">
+<title>{% block title %}Ferian e Tavares{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #b8974a; --gold-light: #d4b06a; --gold-pale: #f5edda;
+  --black: #0a0a0a; --dark: #1a1a1a; --gray-700: #4a4a4a;
+  --gray-500: #7a7a7a; --gray-200: #e8e8e8; --gray-100: #f5f5f5; --white: #fff;
+  --font-serif: 'Cormorant Garamond', serif; --font-sans: 'Jost', sans-serif;
+  --transition: all 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-sans);background:var(--white);color:var(--dark);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+img{max-width:100%}
+.container{max-width:1200px;margin:0 auto;padding:0 2rem}
+
+/* NAV */
+#mainNav{position:fixed;top:0;left:0;right:0;width:100%;z-index:1000;padding:1.5rem 0;transition:var(--transition)}
+#mainNav.scrolled{background:rgba(10,10,10,0.96);padding:1rem 0;backdrop-filter:blur(10px)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;width:100%}
+.logo{font-family:var(--font-serif);font-size:1.4rem;font-weight:500;color:var(--white);letter-spacing:0.04em}
+.logo span{color:var(--gold)}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{font-size:0.78rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.85);position:relative;transition:var(--transition)}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--gold);transition:var(--transition)}
+.nav-links a:hover{color:var(--white)}
+.nav-links a:hover::after{width:100%}
+.nav-cta{background:var(--gold)!important;color:var(--black)!important;padding:0.55rem 1.4rem}
+.nav-cta::after{display:none!important}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:0.5rem}
+.hamburger span{display:block;width:24px;height:1.5px;background:var(--white);transition:var(--transition)}
+.mobile-menu{position:fixed;inset:0;background:var(--black);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;transform:translateX(-100%);transition:var(--transition)}
+.mobile-menu.open{transform:translateX(0)}
+.mobile-menu a{font-family:var(--font-serif);font-size:2rem;font-weight:300;color:var(--white)}
+.mobile-menu a:hover{color:var(--gold)}
+
+/* BUTTONS */
+.btn-primary{display:inline-flex;align-items:center;gap:0.5rem;background:var(--gold);color:var(--black);padding:1rem 2rem;font-size:0.78rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;transition:var(--transition);border:none;cursor:pointer}
+.btn-primary:hover{background:var(--gold-light);transform:translateY(-2px)}
+.btn-outline{display:inline-flex;align-items:center;gap:0.5rem;background:transparent;color:var(--white);padding:1rem 2rem;font-size:0.78rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;border:1px solid rgba(255,255,255,0.4);transition:var(--transition)}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-2px)}
+.btn-wpp{display:inline-flex;align-items:center;gap:0.5rem;background:#25d366;color:var(--white);padding:1rem 2rem;font-size:0.78rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;transition:var(--transition);border:none;cursor:pointer}
+.btn-wpp:hover{background:#1da550;transform:translateY(-2px)}
+
+/* SECTION */
+section{padding:6rem 0}
+.section-label{font-size:0.7rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:0.8rem;display:block}
+.section-title{font-family:var(--font-serif);font-size:clamp(2rem,3.5vw,3rem);font-weight:300;line-height:1.2;color:var(--dark);margin-bottom:1rem}
+.section-sub{font-size:0.95rem;font-weight:300;color:var(--gray-500);max-width:500px;line-height:1.7}
+.divider{width:40px;height:1px;background:var(--gold);margin:1.5rem 0}
+
+/* MESSAGES */
+.django-messages{position:fixed;top:80px;right:2rem;z-index:2000;display:flex;flex-direction:column;gap:0.5rem}
+.django-msg{padding:1rem 1.5rem;font-size:0.85rem;font-weight:500;border-left:3px solid var(--gold);background:var(--white);box-shadow:0 4px 20px rgba(0,0,0,0.1);animation:slideIn 0.3s ease}
+.django-msg.success{border-color:#2d9e6b;background:#edfaf4;color:#1a6b48}
+.django-msg.error{border-color:#c0392b;background:#fdf0ef;color:#922b21}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* WPP FLOAT */
+.wpp-float{position:fixed;bottom:2rem;right:2rem;z-index:999;width:58px;height:58px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 25px rgba(37,211,102,0.4);transition:var(--transition);animation:pulse 2.5s infinite}
+.wpp-float:hover{transform:scale(1.1)}
+.wpp-float svg{width:26px;height:26px;fill:white}
+@keyframes pulse{0%,100%{box-shadow:0 8px 25px rgba(37,211,102,0.4)}50%{box-shadow:0 8px 35px rgba(37,211,102,0.65)}}
+
+/* FOOTER */
+footer{background:var(--black);color:rgba(255,255,255,0.5);padding:3rem 0}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.5rem}
+.footer-logo{font-family:var(--font-serif);font-size:1.2rem;font-weight:400;color:var(--white)}
+.footer-logo span{color:var(--gold)}
+.footer-nav{display:flex;gap:2rem;flex-wrap:wrap}
+.footer-nav a{font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);transition:var(--transition)}
+.footer-nav a:hover{color:var(--gold)}
+.footer-copy{font-size:0.72rem}
+
+/* ANIMATIONS */
+.fade-up{opacity:0;transform:translateY(30px);transition:opacity 0.7s ease,transform 0.7s ease}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .nav-links{display:none}
+  .hamburger{display:flex}
+}
+@media(max-width:600px){
+  .container{padding:0 1.25rem}
+  section{padding:4rem 0}
+}
+</style>
+{% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<nav id="mainNav">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="/" class="logo" style="line-height:1.2">
+        <span style="display:block">Bruno Ferian</span>
+        <span style="display:block">Luiz Tavares<span style="color:var(--gold)"></span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Início</a></li>
+        <li><a href="/imoveis/">Imóveis</a></li>
+        <li><a href="/sobre/">Sobre</a></li>
+        <li><a href="/contato/" class="nav-cta">Contato</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/" onclick="closeMenu()">Início</a>
+  <a href="/imoveis/" onclick="closeMenu()">Imóveis</a>
+  <a href="/sobre/" onclick="closeMenu()">Sobre</a>
+  <a href="/contato/" onclick="closeMenu()">Contato</a>
+</div>
+
+{% if messages %}
+<div class="django-messages">
+  {% for msg in messages %}
+  <div class="django-msg {{ msg.tags }}">{{ msg }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+<a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Olá%2C%20gostaria%20de%20informações%20sobre%20imóveis" target="_blank" class="wpp-float" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.524 5.847L.057 23.572a.5.5 0 00.606.65l5.893-1.545A11.942 11.942 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.886 0-3.655-.492-5.189-1.354l-.371-.215-3.847 1.01 1.028-3.75-.234-.385A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+</a>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo"> Ferian e Tavares <span></span></div>
+      <nav class="footer-nav">
+        <a href="/">Início</a>
+        <a href="/imoveis/">Imóveis</a>
+        <a href="/sobre/">Sobre</a>
+        <a href="/contato/">Contato</a>
+      </nav>
+      <p class="footer-copy">© 2025 · CRECI {{ BROKER_CRECI }} · Todos os direitos reservados</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+window.addEventListener('scroll',()=>document.getElementById('mainNav').classList.toggle('scrolled',window.scrollY>80));
+document.getElementById('hamburger').addEventListener('click',()=>document.getElementById('mobileMenu').classList.toggle('open'));
+function closeMenu(){document.getElementById('mobileMenu').classList.remove('open')}
+setTimeout(()=>{document.querySelectorAll('.django-msg').forEach(m=>{m.style.transition='opacity 0.5s';m.style.opacity='0';setTimeout(()=>m.remove(),500)})},4000);
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:0.1});
+document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,87 @@
+{% extends "painel/base.html" %}
+{% block title %}Leads{% endblock %}
+{% block page_title %}Leads{% endblock %}
+
+{% block content %}
+
+{% if leads_novos %}
+<div class="alert alert-warning" style="margin-bottom:1.5rem">
+  🔔 Você tem <strong>{{ leads_novos }} lead{{ leads_novos|pluralize:"","s" }} novo{{ leads_novos|pluralize:"","s" }}</strong> aguardando contato!
+</div>
+{% endif %}
+
+<form method="get" class="filter-bar">
+  <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nome ou telefone...">
+  <select name="status">
+    <option value="">Todos os status</option>
+    {% for val, label in status_choices %}
+    <option value="{{ val }}" {% if status == val %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="filter-submit">Filtrar</button>
+  {% if q or status %}
+  <a href="{% url 'painel:lead_list' %}" style="font-size:0.78rem;color:#aaa">✕ Limpar</a>
+  {% endif %}
+</form>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Contato</th>
+          <th>Interesse</th>
+          <th>Imóvel</th>
+          <th>Recebido</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for lead in leads %}
+        <tr {% if lead.status == 'novo' %}style="background:#fffdf7"{% endif %}>
+          <td>
+            <div style="font-weight:{% if lead.status == 'novo' %}600{% else %}400{% endif %}">
+              {% if lead.status == 'novo' %}<span style="color:#b8974a">●</span> {% endif %}{{ lead.nome }}
+            </div>
+          </td>
+          <td>
+            <div style="font-size:0.82rem">{{ lead.telefone }}</div>
+            {% if lead.email %}<div style="font-size:0.72rem;color:#aaa">{{ lead.email }}</div>{% endif %}
+          </td>
+          <td><span class="badge badge-gray">{{ lead.get_interesse_display }}</span></td>
+          <td style="max-width:200px;font-size:0.78rem;color:#666">
+            {% if lead.imovel %}
+            <a href="{% url 'painel:imovel_edit' lead.imovel.pk %}" style="color:#b8974a">{{ lead.imovel.titulo|truncatechars:35 }}</a>
+            {% else %}<span style="color:#ddd">—</span>{% endif %}
+          </td>
+          <td style="font-size:0.78rem;color:#aaa;white-space:nowrap">{{ lead.criado_em|date:"d/m/Y H:i" }}</td>
+          <td>
+            {% if lead.status == 'novo' %}<span class="badge badge-green">Novo</span>
+            {% elif lead.status == 'em_contato' %}<span class="badge badge-blue">Em contato</span>
+            {% elif lead.status == 'negociando' %}<span class="badge badge-orange">Negociando</span>
+            {% elif lead.status == 'convertido' %}<span class="badge badge-gold">Convertido ✓</span>
+            {% elif lead.status == 'perdido' %}<span class="badge badge-red">Perdido</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="actions">
+              <a href="{{ lead.whatsapp_link }}" target="_blank" class="action-btn" title="WhatsApp" style="background:#25d366;border-color:#25d366;color:white">💬</a>
+              <a href="{% url 'painel:lead_detail' lead.pk %}" class="action-btn" title="Ver detalhes">→</a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" style="text-align:center;padding:3rem;color:#aaa">
+            <div style="font-size:2rem;margin-bottom:0.5rem">◎</div>
+            Nenhum lead encontrado.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

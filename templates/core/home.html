@@ -1,0 +1,213 @@
+{% extends "core/base.html" %}
+{% block title %}Ferian e Tavares | Corretores de Alto Padrão{% endblock %}
+
+{% block extra_css %}
+<style>
+/* HERO */
+#home{height:100vh;min-height:700px;position:relative;display:flex;align-items:center;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0a0a0a 0%,#1a1510 50%,#0f0c07 100%)}
+.hero-bg::before{content:'';position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1800&q=80') center/cover no-repeat;opacity:0.35}
+.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(10,10,10,0.9) 40%,rgba(10,10,10,0.3) 100%)}
+.hero-content{position:relative;z-index:2;max-width:680px;animation:fadeUp 1s ease forwards}
+.hero-tag{display:inline-block;font-size:0.7rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);padding:0.4rem 1rem;margin-bottom:2rem}
+.hero-title{font-family:var(--font-serif);font-size:clamp(2.8rem,5vw,4.5rem);font-weight:300;line-height:1.15;color:var(--white);margin-bottom:1.5rem}
+.hero-title em{font-style:italic;color:var(--gold)}
+.hero-sub{font-size:1rem;font-weight:300;color:rgba(255,255,255,0.7);line-height:1.7;max-width:480px;margin-bottom:2.5rem}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap}
+.hero-stats{position:absolute;bottom:3rem;right:0;z-index:2;display:flex;gap:3rem}
+.stat{text-align:center}
+.stat-num{font-family:var(--font-serif);font-size:2.2rem;font-weight:300;color:var(--gold);display:block}
+.stat-label{font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.55)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+/* PROPERTIES */
+#imoveis{background:var(--gray-100)}
+.prop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:2rem}
+.prop-card{background:var(--white);overflow:hidden;cursor:pointer;transition:var(--transition);display:block}
+.prop-card:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,0.1)}
+.card-img{position:relative;overflow:hidden;height:240px}
+.card-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.6s ease}
+.prop-card:hover .card-img img{transform:scale(1.05)}
+.card-badge{position:absolute;top:1rem;left:1rem;background:var(--gold);color:var(--black);font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.3rem 0.7rem}
+.card-body{padding:1.5rem}
+.card-price{font-family:var(--font-serif);font-size:1.5rem;font-weight:500;color:var(--dark);margin-bottom:0.3rem}
+.card-loc{font-size:0.78rem;color:var(--gray-500);margin-bottom:0.75rem}
+.card-title{font-size:0.95rem;font-weight:500;color:var(--dark);margin-bottom:1rem;line-height:1.4}
+.card-feats{display:flex;gap:1.5rem;padding-top:1rem;border-top:1px solid var(--gray-100)}
+.feat{display:flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--gray-500)}
+
+/* ABOUT STRIP */
+#sobre-strip{background:var(--dark);padding:5rem 0}
+.about-inner{display:grid;grid-template-columns:auto 1fr auto;gap:3rem;align-items:center}
+.broker-photo{width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid var(--gold)}
+.about-text .name{font-family:var(--font-serif);font-size:1.8rem;font-weight:300;color:var(--white);margin-bottom:0.3rem}
+.about-text .creci{color:var(--gold);font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.75rem}
+.about-text p{color:rgba(255,255,255,0.6);font-size:0.9rem;line-height:1.7;max-width:520px}
+
+/* DEPOIMENTOS */
+#depoimentos{background:var(--white)}
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;margin-top:3rem}
+.testi-card{padding:2rem;border:1px solid var(--gray-200);transition:var(--transition)}
+.testi-card:hover{border-color:var(--gold)}
+.stars{color:var(--gold);font-size:0.85rem;margin-bottom:1rem;letter-spacing:0.1em}
+.testi-text{font-family:var(--font-serif);font-size:1.05rem;font-weight:300;font-style:italic;color:var(--gray-700);line-height:1.7;margin-bottom:1.5rem}
+.testi-author{display:flex;align-items:center;gap:1rem;border-top:1px solid var(--gray-200);padding-top:1rem}
+.testi-photo{width:44px;height:44px;border-radius:50%;object-fit:cover;border:1px solid var(--gold)}
+.testi-name{font-size:0.88rem;font-weight:500;color:var(--dark)}
+.testi-role{font-size:0.75rem;color:var(--gray-500)}
+
+@media(max-width:900px){
+  .about-inner{grid-template-columns:1fr;text-align:center}
+  .broker-photo{margin:0 auto}
+  .hero-stats{display:none}
+}
+@media(max-width:600px){
+  .prop-grid{grid-template-columns:1fr}
+  .hero-btns{flex-direction:column}
+  .hero-btns a{width:100%;justify-content:center}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section id="home">
+  <div class="hero-bg"></div>
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-tag">✦ Corretores Premium</div>
+      <h1 class="hero-title">Encontre o imóvel <em>ideal</em> com atendimento personalizado</h1>
+      <p class="hero-sub">Mais de 12 anos conectando famílias e investidores aos melhores imóveis do mercado. Transparência, exclusividade e resultado garantido.</p>
+      <div class="hero-btns">
+        <a href="/imoveis/" class="btn-primary">Ver imóveis disponíveis</a>
+        <a href="https://wa.me/{{ WHATSAPP_NUMBER }}" target="_blank" class="btn-outline">Falar no WhatsApp</a>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">350+</span><span class="stat-label">Imóveis vendidos</span></div>
+      <div class="stat"><span class="stat-num">12</span><span class="stat-label">Anos de experiência</span></div>
+      <div class="stat"><span class="stat-num">98%</span><span class="stat-label">Clientes satisfeitos</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- IMÓVEIS EM DESTAQUE -->
+{% if imoveis %}
+<section id="imoveis" style="background:var(--gray-100)">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3rem;flex-wrap:wrap;gap:1rem">
+      <div>
+        <span class="section-label">Portfólio exclusivo</span>
+        <h2 class="section-title">Imóveis em Destaque</h2>
+        <div class="divider"></div>
+      </div>
+      <a href="/imoveis/" class="btn-primary">Ver todos os imóveis →</a>
+    </div>
+    <div class="prop-grid">
+      {% for imovel in imoveis %}
+      <a href="/imoveis/{{ imovel.slug }}/" class="prop-card fade-up">
+        <div class="card-img">
+          {% if imovel.foto_principal %}
+          <img src="{{ imovel.foto_principal.imagem.url }}" alt="{{ imovel.titulo }}" loading="lazy">
+          {% else %}
+          <div style="width:100%;height:100%;background:#e8e8e8;display:flex;align-items:center;justify-content:center;font-size:3rem">⌂</div>
+          {% endif %}
+          {% if imovel.destaque %}<div class="card-badge">{{ imovel.get_destaque_display }}</div>{% endif %}
+        </div>
+        <div class="card-body">
+          <div class="card-price">{{ imovel.preco_formatado }}</div>
+          <div class="card-loc">📍 {% if imovel.bairro %}{{ imovel.bairro.nome }}, {% endif %}{% if imovel.cidade %}{{ imovel.cidade.nome }}{% endif %}</div>
+          <div class="card-title">{{ imovel.titulo }}</div>
+          <div class="card-feats">
+            {% if imovel.quartos %}<div class="feat">🛏 {{ imovel.quartos }} quartos</div>{% endif %}
+            {% if imovel.banheiros %}<div class="feat">🚿 {{ imovel.banheiros }} banheiros</div>{% endif %}
+            {% if imovel.area_total %}<div class="feat">📐 {{ imovel.area_total }}m²</div>{% endif %}
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- SOBRE STRIP -->
+<section id="sobre-strip">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:3rem">
+      <span class="section-label">Nossa equipe</span>
+      <h2 style="font-family:var(--font-serif);font-size:clamp(1.8rem,3vw,2.5rem);font-weight:300;color:var(--white)">Corretores especializados</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem">
+
+      <!-- CORRETOR 1 -->
+      <div class="about-inner" style="grid-template-columns:auto 1fr;gap:2rem">
+        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&q=80" alt="Bruno Ferian" class="broker-photo">
+        <div class="about-text">
+          <div class="name">Bruno Ferian</div>
+          <div class="creci">CRECI 142602-F</div>
+          <p>Especialista em imóveis residenciais de alto padrão com foco em resultados e atendimento personalizado.</p>
+          <a href="/sobre/" class="btn-primary" style="margin-top:1.2rem;display:inline-flex;font-size:0.72rem;padding:0.75rem 1.5rem">Conhecer mais →</a>
+        </div>
+      </div>
+
+      <!-- CORRETOR 2 -->
+      <div class="about-inner" style="grid-template-columns:auto 1fr;gap:2rem">
+        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&q=80" alt="Luiz Tavares" class="broker-photo">
+        <div class="about-text">
+          <div class="name">Luiz Tavares</div>
+          <div class="creci">CRECI 226905-F</div>
+          <p>Especialista em imóveis comerciais e investimentos imobiliários com ampla experiência no mercado de SP.</p>
+          <a href="/sobre/" class="btn-primary" style="margin-top:1.2rem;display:inline-flex;font-size:0.72rem;padding:0.75rem 1.5rem">Conhecer mais →</a>
+        </div>
+      </div>
+
+    </div>
+    <div style="text-align:center;margin-top:3rem">
+      <a href="https://wa.me/{{ WHATSAPP_NUMBER }}" target="_blank" class="btn-wpp">💬 Falar no WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- DEPOIMENTOS -->
+<section id="depoimentos">
+  <div class="container">
+    <div style="text-align:center;max-width:600px;margin:0 auto 4rem">
+      <span class="section-label">Depoimentos</span>
+      <h2 class="section-title">O que dizem meus clientes</h2>
+      <div class="divider" style="margin:1.5rem auto"></div>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card fade-up">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"O Bruno foi excepcional. Encontrou o apartamento dos nossos sonhos em menos de 30 dias e cuidou de toda a documentação."</p>
+        <div class="testi-author">
+          <img src="https://images.unsplash.com/photo-1494790108755-2616b332b8f9?w=100&q=80" alt="Fernanda S." class="testi-photo">
+          <div><div class="testi-name">Fernanda Silveira</div><div class="testi-role">Compradora · Jardins, SP</div></div>
+        </div>
+      </div>
+      <div class="testi-card fade-up">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"Vendeu meu imóvel em 15 dias pelo preço que eu esperava. Comunicação impecável e total transparência no processo."</p>
+        <div class="testi-author">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80" alt="Carlos M." class="testi-photo">
+          <div><div class="testi-name">Carlos Mendes</div><div class="testi-role">Vendedor · Moema, SP</div></div>
+        </div>
+      </div>
+      <div class="testi-card fade-up">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"Investi em dois imóveis com a orientação do Luiz. O retorno foi acima do esperado. Sua expertise faz toda a diferença."</p>
+        <div class="testi-author">
+          <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80" alt="Ana L." class="testi-photo">
+          <div><div class="testi-name">Ana Lima</div><div class="testi-role">Investidora · Campinas, SP</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:3rem">
+      <a href="/contato/" class="btn-primary">Quero falar com os corretores →</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

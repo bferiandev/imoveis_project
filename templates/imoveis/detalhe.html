@@ -1,0 +1,173 @@
+{% extends "core/base.html" %}
+{% block title %}{{ imovel.titulo }} · Rafael Moura Imóveis{% endblock %}
+{% block meta_desc %}{{ imovel.meta_descricao|default:imovel.descricao|truncatechars:160 }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.detail-hero{margin-top:60px;position:relative;height:65vh;min-height:450px;overflow:hidden;background:#111}
+.slider-wrap{height:100%;position:relative}
+.slider-slides{display:flex;height:100%;transition:transform 0.5s ease}
+.slider-slides img{min-width:100%;height:100%;object-fit:cover}
+.slider-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(10,10,10,0.6);border:none;color:var(--white);width:48px;height:48px;cursor:pointer;font-size:1.2rem;transition:var(--transition);display:flex;align-items:center;justify-content:center}
+.slider-btn:hover{background:var(--gold);color:var(--black)}
+.slider-prev{left:1.5rem}.slider-next{right:1.5rem}
+.slider-dots{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);display:flex;gap:0.5rem}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.5);cursor:pointer;transition:var(--transition);border:none}
+.dot.active{background:var(--gold)}
+.detail-body{max-width:1200px;margin:0 auto;padding:3rem 2rem}
+.detail-grid{display:grid;grid-template-columns:1fr 360px;gap:3rem}
+.detail-price{font-family:var(--font-serif);font-size:2.2rem;font-weight:500;color:var(--dark);margin-bottom:0.4rem}
+.detail-loc{font-size:0.9rem;color:var(--gray-500);margin-bottom:1.5rem}
+.detail-title{font-family:var(--font-serif);font-size:1.8rem;font-weight:300;color:var(--dark);margin-bottom:1.5rem;line-height:1.3}
+.detail-specs{display:flex;gap:2rem;padding:1.5rem 0;border-top:1px solid var(--gray-200);border-bottom:1px solid var(--gray-200);margin-bottom:2rem;flex-wrap:wrap}
+.spec{display:flex;flex-direction:column;align-items:center;gap:0.3rem}
+.spec-num{font-family:var(--font-serif);font-size:1.5rem;font-weight:500;color:var(--dark)}
+.spec-label{font-size:0.72rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.08em}
+.detail-desc{font-size:0.95rem;line-height:1.8;color:var(--gray-700);margin-bottom:2rem}
+.feats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.6rem}
+.feat-item{display:flex;align-items:center;gap:0.6rem;font-size:0.85rem;color:var(--gray-700);padding:0.5rem 0}
+.feat-item::before{content:'✓';color:var(--gold);font-weight:700}
+.contact-card{background:var(--dark);padding:2rem;position:sticky;top:90px;align-self:start}
+.contact-card h3{font-family:var(--font-serif);font-size:1.3rem;color:var(--white);font-weight:400;margin-bottom:0.5rem}
+.contact-card p{font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:1.5rem}
+.contact-card .btn-primary,.contact-card .btn-wpp{width:100%;justify-content:center;margin-bottom:0.8rem;display:flex}
+.broker-mini{display:flex;align-items:center;gap:1rem;border-top:1px solid rgba(255,255,255,0.1);margin-top:1.5rem;padding-top:1.5rem}
+.broker-photo{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}
+.broker-name{color:var(--white);font-size:0.9rem;font-weight:500}
+.broker-creci{color:var(--gold);font-size:0.72rem}
+.map-wrap{height:280px;background:var(--gray-100);margin-top:2rem;overflow:hidden}
+.map-wrap iframe{width:100%;height:100%;border:none}
+.related-section{background:var(--gray-100);padding:5rem 0}
+.related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2rem;margin-top:2rem}
+@media(max-width:900px){.detail-grid{grid-template-columns:1fr}.contact-card{position:static}}
+@media(max-width:600px){.detail-hero{height:50vh}.feats-grid{grid-template-columns:1fr}}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- SLIDER -->
+<div class="detail-hero">
+  <div class="slider-wrap">
+    <div class="slider-slides" id="sliderSlides">
+      {% for foto in imovel.fotos.all %}
+      <img src="{{ foto.imagem.url }}" alt="{{ foto.legenda|default:imovel.titulo }}">
+      {% empty %}
+      <div style="min-width:100%;height:100%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:5rem;color:#333">⌂</div>
+      {% endfor %}
+    </div>
+    {% if imovel.fotos.count > 1 %}
+    <button class="slider-btn slider-prev" onclick="slideMove(-1)">&#8592;</button>
+    <button class="slider-btn slider-next" onclick="slideMove(1)">&#8594;</button>
+    <div class="slider-dots" id="sliderDots">
+      {% for foto in imovel.fotos.all %}
+      <button class="dot {% if forloop.first %}active{% endif %}" onclick="goSlide({{ forloop.counter0 }})"></button>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="detail-body">
+  <div class="detail-grid">
+    <div>
+      <div class="detail-price">{{ imovel.preco_formatado }}{% if imovel.preco_negociavel %} <span style="font-size:0.9rem;color:var(--gold);font-family:var(--font-sans);font-weight:400">· negociável</span>{% endif %}</div>
+      <div class="detail-loc">📍 {% if imovel.bairro %}{{ imovel.bairro.nome }}, {% endif %}{% if imovel.cidade %}{{ imovel.cidade.nome }}{% endif %} · {{ imovel.get_tipo_display }}</div>
+      <div class="detail-title">{{ imovel.titulo }}</div>
+
+      <div class="detail-specs">
+        {% if imovel.quartos %}<div class="spec"><span class="spec-num">{{ imovel.quartos }}</span><span class="spec-label">Quartos</span></div>{% endif %}
+        {% if imovel.suites %}<div class="spec"><span class="spec-num">{{ imovel.suites }}</span><span class="spec-label">Suítes</span></div>{% endif %}
+        {% if imovel.banheiros %}<div class="spec"><span class="spec-num">{{ imovel.banheiros }}</span><span class="spec-label">Banheiros</span></div>{% endif %}
+        {% if imovel.vagas %}<div class="spec"><span class="spec-num">{{ imovel.vagas }}</span><span class="spec-label">Vagas</span></div>{% endif %}
+        {% if imovel.area_total %}<div class="spec"><span class="spec-num">{{ imovel.area_total }}</span><span class="spec-label">m² total</span></div>{% endif %}
+        {% if imovel.area_construida %}<div class="spec"><span class="spec-num">{{ imovel.area_construida }}</span><span class="spec-label">m² construído</span></div>{% endif %}
+      </div>
+
+      <p class="detail-desc">{{ imovel.descricao }}</p>
+
+      {% if imovel.lista_diferenciais %}
+      <div style="margin-bottom:2rem">
+        <h3 style="font-family:var(--font-serif);font-size:1.2rem;font-weight:500;margin-bottom:1rem;color:var(--dark)">Características</h3>
+        <div class="feats-grid">
+          {% for item in imovel.lista_diferenciais %}
+          <div class="feat-item">{{ item }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if imovel.condominio or imovel.iptu %}
+      <div style="padding:1.5rem;background:var(--gray-100);margin-bottom:2rem">
+        <h3 style="font-size:0.85rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--gray-500);margin-bottom:1rem">Custos mensais</h3>
+        <div style="display:flex;gap:2rem">
+          {% if imovel.condominio %}<div><div style="font-size:0.72rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.08em">Condomínio</div><div style="font-weight:600">R$ {{ imovel.condominio }}</div></div>{% endif %}
+          {% if imovel.iptu %}<div><div style="font-size:0.72rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.08em">IPTU/mês</div><div style="font-weight:600">R$ {{ imovel.iptu }}</div></div>{% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if imovel.endereco %}
+      <div class="map-wrap">
+        <iframe src="https://maps.google.com/maps?q={{ imovel.endereco|urlencode }}&output=embed&zoom=15" allowfullscreen loading="lazy"></iframe>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- CONTACT CARD -->
+    <div>
+      <div class="contact-card">
+        <h3>Tenho interesse</h3>
+        <p>Atendimento personalizado e exclusivo para você.</p>
+        <a href="/contato/" class="btn-primary">📅 Agendar visita</a>
+        <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Olá%20Rafael!%20Tenho%20interesse%20no%20imóvel:%20{{ imovel.titulo|urlencode }}%20-%20{{ imovel.preco_formatado|urlencode }}"
+           target="_blank" class="btn-wpp">💬 Falar no WhatsApp</a>
+        <div class="broker-mini">
+          <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&q=80" alt="{{ BROKER_NAME }}" class="broker-photo">
+          <div>
+            <div class="broker-name">{{ BROKER_NAME }}</div>
+            <div class="broker-creci">CRECI {{ BROKER_CRECI }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RELACIONADOS -->
+{% if relacionados %}
+<div class="related-section">
+  <div class="container">
+    <span class="section-label">Veja também</span>
+    <h2 class="section-title">Imóveis semelhantes</h2>
+    <div class="related-grid">
+      {% for rel in relacionados %}
+      <a href="/imoveis/{{ rel.slug }}/" style="background:var(--white);overflow:hidden;display:block;transition:var(--transition)" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform=''">
+        {% if rel.foto_principal %}
+        <img src="{{ rel.foto_principal.imagem.url }}" alt="{{ rel.titulo }}" style="width:100%;height:200px;object-fit:cover;display:block">
+        {% endif %}
+        <div style="padding:1.25rem">
+          <div style="font-family:var(--font-serif);font-size:1.3rem;font-weight:500;color:var(--dark);margin-bottom:0.3rem">{{ rel.preco_formatado }}</div>
+          <div style="font-size:0.88rem;font-weight:500;color:var(--dark)">{{ rel.titulo|truncatechars:50 }}</div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let cur = 0;
+const slides = document.getElementById('sliderSlides');
+const total = slides ? slides.children.length : 0;
+function updateSlider(){
+  if(slides) slides.style.transform = `translateX(-${cur*100}%)`;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+}
+function slideMove(dir){ cur=(cur+dir+total)%total; updateSlider(); }
+function goSlide(i){ cur=i; updateSlider(); }
+</script>
+{% endblock %}
