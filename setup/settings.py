@@ -102,6 +102,7 @@ import os
 if os.environ.get('RAILWAY_ENVIRONMENT'):
     DEBUG = False
     ALLOWED_HOSTS = ['*']
+    PREPEND_WWW = True
     CSRF_TRUSTED_ORIGINS = [
     'https://web-production-7618c.up.railway.app',
     'https://feriantavares.com.br',
