@@ -18,7 +18,7 @@
     <div style="font-weight:600;font-size:0.95rem">{{ imovel.titulo }}</div>
     <div style="font-size:0.78rem;color:#aaa">{{ imovel.preco_formatado }}
       {% if imovel.cidade %} · {{ imovel.cidade.nome }}{% endif %}
-      · {{ imovel.fotos.count }} foto{{ imovel.fotos.count|pluralize:"","s" }}
+      {{ imovel.fotos.count|pluralize:",s" }}
     </div>
   </div>
 </div>
@@ -51,7 +51,7 @@
 <!-- EXISTING PHOTOS -->
 <div class="card">
   <div class="card-header">
-    <span class="card-header-title">Galeria ({{ imovel.fotos.count }} foto{{ imovel.fotos.count|pluralize:"","s" }})</span>
+    <span class="card-header-title">Galeria ({{ imovel.fotos.count }} foto{{ imovel.fotos.count|pluralize:",s" }})</span>
     <span style="font-size:0.75rem;color:#aaa">A foto marcada como principal aparece como capa no site</span>
   </div>
   <div class="card-body">
