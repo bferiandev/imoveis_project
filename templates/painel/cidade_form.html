@@ -1,0 +1,58 @@
+{% extends "painel/base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'painel:cidade_list' %}" class="topbar-btn btn-outline-dark">← Voltar</a>
+{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:500px">
+  <div class="card-header"><span class="card-header-title">{{ titulo }}</span></div>
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group" style="margin-bottom:1.2rem">
+        <label class="form-label">Nome da cidade *</label>
+        <input type="text" name="nome" class="form-control"
+               value="{{ cidade.nome|default:'' }}" placeholder="Ex: São Paulo" required>
+      </div>
+      <div class="form-group" style="margin-bottom:1.5rem">
+        <label class="form-label">Estado *</label>
+        <select name="estado" class="form-control">
+          <option value="AC" {% if cidade.estado == "AC" %}selected{% endif %}>AC</option>
+          <option value="AL" {% if cidade.estado == "AL" %}selected{% endif %}>AL</option>
+          <option value="AM" {% if cidade.estado == "AM" %}selected{% endif %}>AM</option>
+          <option value="AP" {% if cidade.estado == "AP" %}selected{% endif %}>AP</option>
+          <option value="BA" {% if cidade.estado == "BA" %}selected{% endif %}>BA</option>
+          <option value="CE" {% if cidade.estado == "CE" %}selected{% endif %}>CE</option>
+          <option value="DF" {% if cidade.estado == "DF" %}selected{% endif %}>DF</option>
+          <option value="ES" {% if cidade.estado == "ES" %}selected{% endif %}>ES</option>
+          <option value="GO" {% if cidade.estado == "GO" %}selected{% endif %}>GO</option>
+          <option value="MA" {% if cidade.estado == "MA" %}selected{% endif %}>MA</option>
+          <option value="MG" {% if cidade.estado == "MG" %}selected{% endif %}>MG</option>
+          <option value="MS" {% if cidade.estado == "MS" %}selected{% endif %}>MS</option>
+          <option value="MT" {% if cidade.estado == "MT" %}selected{% endif %}>MT</option>
+          <option value="PA" {% if cidade.estado == "PA" %}selected{% endif %}>PA</option>
+          <option value="PB" {% if cidade.estado == "PB" %}selected{% endif %}>PB</option>
+          <option value="PE" {% if cidade.estado == "PE" %}selected{% endif %}>PE</option>
+          <option value="PI" {% if cidade.estado == "PI" %}selected{% endif %}>PI</option>
+          <option value="PR" {% if cidade.estado == "PR" %}selected{% endif %}>PR</option>
+          <option value="RJ" {% if cidade.estado == "RJ" %}selected{% endif %}>RJ</option>
+          <option value="RN" {% if cidade.estado == "RN" %}selected{% endif %}>RN</option>
+          <option value="RO" {% if cidade.estado == "RO" %}selected{% endif %}>RO</option>
+          <option value="RR" {% if cidade.estado == "RR" %}selected{% endif %}>RR</option>
+          <option value="RS" {% if cidade.estado == "RS" %}selected{% endif %}>RS</option>
+          <option value="SC" {% if cidade.estado == "SC" %}selected{% endif %}>SC</option>
+          <option value="SE" {% if cidade.estado == "SE" %}selected{% endif %}>SE</option>
+          <option value="SP" {% if cidade.estado == "SP" or not cidade %}selected{% endif %}>SP</option>
+          <option value="TO" {% if cidade.estado == "TO" %}selected{% endif %}>TO</option>
+        </select>
+      </div>
+      <button type="submit" class="topbar-btn btn-gold" style="width:100%;justify-content:center;padding:0.9rem">
+        💾 Salvar
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

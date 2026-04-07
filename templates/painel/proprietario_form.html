@@ -1,0 +1,68 @@
+{% extends "painel/base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'painel:proprietario_list' %}" class="topbar-btn btn-outline-dark">← Voltar</a>
+{% endblock %}
+
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start">
+
+    <div class="card">
+      <div class="card-header"><span class="card-header-title">Dados pessoais</span></div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label class="form-label">Nome completo *</label>
+            <input type="text" name="nome" class="form-control"
+                   value="{{ proprietario.nome|default:'' }}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tipo</label>
+            <select name="tipo" class="form-control">
+              <option value="pf" {% if not proprietario or proprietario.tipo == 'pf' %}selected{% endif %}>Pessoa Física</option>
+              <option value="pj" {% if proprietario.tipo == 'pj' %}selected{% endif %}>Pessoa Jurídica</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">CPF / CNPJ</label>
+            <input type="text" name="cpf_cnpj" class="form-control"
+                   value="{{ proprietario.cpf_cnpj|default:'' }}" placeholder="000.000.000-00">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Telefone *</label>
+            <input type="text" name="telefone" class="form-control"
+                   value="{{ proprietario.telefone|default:'' }}" placeholder="(11) 99999-9999" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Telefone 2</label>
+            <input type="text" name="telefone2" class="form-control"
+                   value="{{ proprietario.telefone2|default:'' }}" placeholder="(11) 99999-9999">
+          </div>
+          <div class="form-group full">
+            <label class="form-label">E-mail</label>
+            <input type="email" name="email" class="form-control"
+                   value="{{ proprietario.email|default:'' }}" placeholder="email@exemplo.com">
+          </div>
+          <div class="form-group full">
+            <label class="form-label">Observações</label>
+            <textarea name="observacoes" class="form-control" rows="4"
+                      placeholder="Anotações internas sobre o proprietário...">{{ proprietario.observacoes|default:'' }}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <button type="submit" class="topbar-btn btn-gold"
+              style="width:100%;justify-content:center;padding:0.9rem;font-size:0.8rem">
+        💾 Salvar proprietário
+      </button>
+    </div>
+
+  </div>
+</form>
+{% endblock %}

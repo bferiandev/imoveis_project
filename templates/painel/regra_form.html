@@ -1,0 +1,105 @@
+{% extends "painel/base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'painel:regra_list' %}" class="topbar-btn btn-outline-dark">← Voltar</a>
+{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:700px">
+  <div class="card-header"><span class="card-header-title">{{ titulo }}</span></div>
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">Nome da regra *</label>
+          <input type="text" name="nome" class="form-control"
+                 value="{{ regra.nome|default:'' }}"
+                 placeholder="Ex: Venda residencial alto padrão SP" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Time destino *</label>
+          <select name="time" class="form-control" required>
+            <option value="">Selecione...</option>
+            {% for t in times %}
+            <option value="{{ t.pk }}" {% if regra.time_id == t.pk %}selected{% endif %}>
+              {{ t.nome }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Prioridade</label>
+          <input type="number" name="prioridade" class="form-control"
+                 value="{{ regra.prioridade|default:0 }}" min="0">
+          <span class="form-help">Menor número = avaliada primeiro</span>
+        </div>
+
+        <div style="grid-column:1/-1">
+          <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#666;margin-bottom:1rem;padding-top:1rem;border-top:1px solid #f4f4f4">
+            Critérios de matching — deixe em branco para qualquer valor
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tipo de operação</label>
+          <select name="operacao" class="form-control">
+            <option value="" {% if not regra.operacao %}selected{% endif %}>Qualquer</option>
+            <option value="venda" {% if regra.operacao == 'venda' %}selected{% endif %}>Venda</option>
+            <option value="locacao" {% if regra.operacao == 'locacao' %}selected{% endif %}>Locação</option>
+            <option value="lancamento" {% if regra.operacao == 'lancamento' %}selected{% endif %}>Lançamento</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo do imóvel</label>
+          <select name="tipo_imovel" class="form-control">
+            <option value="" {% if not regra.tipo_imovel %}selected{% endif %}>Qualquer</option>
+            <option value="residencial" {% if regra.tipo_imovel == 'residencial' %}selected{% endif %}>Residencial</option>
+            <option value="comercial" {% if regra.tipo_imovel == 'comercial' %}selected{% endif %}>Comercial</option>
+            <option value="rural" {% if regra.tipo_imovel == 'rural' %}selected{% endif %}>Rural</option>
+            <option value="condominio" {% if regra.tipo_imovel == 'condominio' %}selected{% endif %}>Condomínio</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Perfil do cliente</label>
+          <select name="perfil_cliente" class="form-control">
+            <option value="" {% if not regra.perfil_cliente %}selected{% endif %}>Qualquer</option>
+            <option value="comprador" {% if regra.perfil_cliente == 'comprador' %}selected{% endif %}>Comprador</option>
+            <option value="investidor" {% if regra.perfil_cliente == 'investidor' %}selected{% endif %}>Investidor</option>
+            <option value="empresa" {% if regra.perfil_cliente == 'empresa' %}selected{% endif %}>Empresa (B2B)</option>
+            <option value="locatario" {% if regra.perfil_cliente == 'locatario' %}selected{% endif %}>Locatário</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Região / Cidade</label>
+          <input type="text" name="regiao" class="form-control"
+                 value="{{ regra.regiao|default:'' }}" placeholder="Ex: São Paulo">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ticket mínimo (R$)</label>
+          <input type="number" name="ticket_min" class="form-control"
+                 value="{{ regra.ticket_min|default:'' }}" placeholder="Ex: 1500000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ticket máximo (R$)</label>
+          <input type="number" name="ticket_max" class="form-control"
+                 value="{{ regra.ticket_max|default:'' }}" placeholder="Ex: 5000000">
+        </div>
+        <div class="form-group full">
+          <div class="form-check">
+            <input type="checkbox" name="ativa" class="form-check-input" id="ativa"
+                   {% if not regra or regra.ativa %}checked{% endif %}>
+            <label class="form-check-label" for="ativa">Regra ativa</label>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="topbar-btn btn-gold"
+              style="width:100%;justify-content:center;padding:0.9rem;margin-top:1rem">
+        💾 Salvar regra
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

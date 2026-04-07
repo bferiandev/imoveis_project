@@ -3,6 +3,29 @@ from django.utils.text import slugify
 from django.urls import reverse
 
 
+class Proprietario(models.Model):
+    TIPO_CHOICES = [
+        ('pf', 'Pessoa Física'),
+        ('pj', 'Pessoa Jurídica'),
+    ]
+
+    nome = models.CharField('Nome completo', max_length=200)
+    tipo = models.CharField('Tipo', max_length=2, choices=TIPO_CHOICES, default='pf')
+    cpf_cnpj = models.CharField('CPF / CNPJ', max_length=20, blank=True)
+    telefone = models.CharField('Telefone', max_length=20)
+    telefone2 = models.CharField('Telefone 2', max_length=20, blank=True)
+    email = models.EmailField('E-mail', blank=True)
+    observacoes = models.TextField('Observações', blank=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Proprietário'
+        verbose_name_plural = 'Proprietários'
+        ordering = ['nome']
+
+    def __str__(self):
+        return self.nome
+
 class Cidade(models.Model):
     nome = models.CharField(max_length=100)
     estado = models.CharField(max_length=2, default='SP')
@@ -92,6 +115,15 @@ class Imovel(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
     visualizacoes = models.PositiveIntegerField(default=0, editable=False)
+
+    # PROPRIETÁRIO
+    proprietario = models.ForeignKey(
+    'Proprietario',
+    on_delete=models.SET_NULL,
+    null=True, blank=True,
+    verbose_name='Proprietário',
+    related_name='imoveis'
+    )
 
     class Meta:
         verbose_name = 'Imóvel'

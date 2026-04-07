@@ -1,0 +1,68 @@
+{% extends "painel/base.html" %}
+{% block title %}Log de Atividades{% endblock %}
+{% block page_title %}Log de Atividades{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <span class="card-header-title">Últimas 200 ações</span>
+    <span style="font-size:0.75rem;color:#aaa">Atualizado em tempo real</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Data/Hora</th>
+          <th>Usuário</th>
+          <th>Ação</th>
+          <th>Módulo</th>
+          <th>Descrição</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td style="white-space:nowrap;font-size:0.78rem;color:#aaa">
+            {{ log.criado_em|date:"d/m/Y" }}<br>
+            <strong style="color:#666">{{ log.criado_em|date:"H:i" }}</strong>
+          </td>
+          <td>
+            <div style="font-weight:500;font-size:0.82rem">
+              {{ log.usuario.get_full_name|default:log.usuario.username }}
+            </div>
+            {% if log.usuario.is_staff %}
+            <span class="badge badge-gold" style="font-size:0.6rem">Admin</span>
+            {% else %}
+            <span class="badge badge-gray" style="font-size:0.6rem">Corretor</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if log.acao == 'criar' %}
+              <span class="badge badge-green">＋ Criou</span>
+            {% elif log.acao == 'editar' %}
+              <span class="badge badge-blue">✎ Editou</span>
+            {% elif log.acao == 'excluir' %}
+              <span class="badge badge-red">✕ Excluiu</span>
+            {% elif log.acao == 'foto' %}
+              <span class="badge badge-gray">📷 Fotos</span>
+            {% elif log.acao == 'status' %}
+              <span class="badge badge-orange">⇄ Status</span>
+            {% elif log.acao == 'login' %}
+              <span class="badge badge-gray">→ Login</span>
+            {% endif %}
+          </td>
+          <td style="font-size:0.82rem;color:#666">{{ log.modelo }}</td>
+          <td style="font-size:0.82rem">{{ log.descricao }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" style="text-align:center;padding:3rem;color:#aaa">
+            Nenhuma atividade registrada ainda.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

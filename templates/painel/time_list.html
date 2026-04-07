@@ -1,0 +1,54 @@
+{% extends "painel/base.html" %}
+{% block title %}Times{% endblock %}
+{% block page_title %}Times{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'painel:time_create' %}" class="topbar-btn btn-gold">＋ Novo Time</a>
+<a href="{% url 'painel:regra_list' %}" class="topbar-btn btn-outline-dark">⚡ Regras de Roteamento</a>
+{% endblock %}
+
+{% block content %}
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem">
+  {% for t in times %}
+  <div class="card">
+    <div style="height:6px;background:{{ t.cor }}"></div>
+    <div class="card-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <div>
+          <div style="font-weight:600;font-size:0.95rem">{{ t.nome }}</div>
+          <div style="font-size:0.72rem;color:#aaa;text-transform:uppercase;letter-spacing:0.08em">{{ t.get_tipo_display }}</div>
+        </div>
+        {% if t.ativo %}
+        <span class="badge badge-green">Ativo</span>
+        {% else %}
+        <span class="badge badge-gray">Inativo</span>
+        {% endif %}
+      </div>
+      {% if t.descricao %}
+      <p style="font-size:0.82rem;color:#666;margin-bottom:1rem;line-height:1.5">{{ t.descricao }}</p>
+      {% endif %}
+      <div style="display:flex;gap:1.5rem;padding-top:1rem;border-top:1px solid #f4f4f4;margin-bottom:1rem">
+        <div style="text-align:center">
+          <div style="font-weight:700;font-size:1.2rem;color:{{ t.cor }}">{{ t.total_corretores }}</div>
+          <div style="font-size:0.7rem;color:#aaa;text-transform:uppercase">Corretores</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-weight:700;font-size:1.2rem;color:{{ t.cor }}">{{ t.total_regras }}</div>
+          <div style="font-size:0.7rem;color:#aaa;text-transform:uppercase">Regras</div>
+        </div>
+      </div>
+      <a href="{% url 'painel:time_edit' t.pk %}" 
+         class="topbar-btn btn-outline-dark" style="width:100%;justify-content:center;padding:0.6rem">
+        ✎ Editar
+      </a>
+    </div>
+  </div>
+  {% empty %}
+  <div style="grid-column:1/-1;text-align:center;padding:4rem;color:#aaa">
+    <div style="font-size:2.5rem;margin-bottom:1rem">👥</div>
+    Nenhum time cadastrado.
+    <a href="{% url 'painel:time_create' %}" style="color:#b8974a">Criar primeiro time →</a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

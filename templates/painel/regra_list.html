@@ -1,0 +1,85 @@
+cat > templates/painel/regra_list.html << 'EOF'
+{% extends "painel/base.html" %}
+{% block title %}Regras de Roteamento{% endblock %}
+{% block page_title %}Regras de Roteamento{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'painel:regra_create' %}" class="topbar-btn btn-gold">＋ Nova Regra</a>
+<a href="{% url 'painel:time_list' %}" class="topbar-btn btn-outline-dark">← Times</a>
+{% endblock %}
+
+{% block content %}
+{% if not DISTRIBUICAO_ATIVA %}
+<div style="background:#fff3cd;border-left:3px solid #d4860a;padding:1rem 1.5rem;margin-bottom:1.5rem;font-size:0.85rem;color:#856404">
+  ⚡ A distribuição automática está <strong>DESATIVADA</strong>. As regras estão prontas mas os leads ainda são atribuídos manualmente.
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Prioridade</th>
+          <th>Regra</th>
+          <th>Time destino</th>
+          <th>Operação</th>
+          <th>Tipo imóvel</th>
+          <th>Perfil cliente</th>
+          <th>Ticket</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in regras %}
+        <tr>
+          <td style="text-align:center;font-weight:700;color:#b8974a">{{ r.prioridade }}</td>
+          <td style="font-weight:500">{{ r.nome }}</td>
+          <td>
+            <span style="display:inline-flex;align-items:center;gap:0.4rem">
+              <span style="width:10px;height:10px;border-radius:50%;background:{{ r.time.cor }};display:inline-block"></span>
+              {{ r.time.nome }}
+            </span>
+          </td>
+          <td><span class="badge badge-gray">{{ r.get_operacao_display|default:"Qualquer" }}</span></td>
+          <td><span class="badge badge-gray">{{ r.get_tipo_imovel_display|default:"Qualquer" }}</span></td>
+          <td><span class="badge badge-gray">{{ r.get_perfil_cliente_display|default:"Qualquer" }}</span></td>
+          <td style="font-size:0.78rem;color:#666">
+            {% if r.ticket_min or r.ticket_max %}
+              {% if r.ticket_min %}R$ {{ r.ticket_min|floatformat:0 }}{% endif %}
+              {% if r.ticket_min and r.ticket_max %} — {% endif %}
+              {% if r.ticket_max %}R$ {{ r.ticket_max|floatformat:0 }}{% endif %}
+            {% else %}
+              <span style="color:#ddd">—</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if r.ativa %}<span class="badge badge-green">Ativa</span>
+            {% else %}<span class="badge badge-gray">Inativa</span>{% endif %}
+          </td>
+          <td>
+            <div class="actions">
+              <a href="{% url 'painel:regra_edit' r.pk %}" class="action-btn">✎</a>
+              <form method="post" action="{% url 'painel:regra_delete' r.pk %}"
+                    onsubmit="return confirm('Excluir regra {{ r.nome }}?')" style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="action-btn danger">✕</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9" style="text-align:center;padding:3rem;color:#aaa">
+            Nenhuma regra cadastrada.
+            <a href="{% url 'painel:regra_create' %}" style="color:#b8974a">Criar primeira regra →</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+EOF

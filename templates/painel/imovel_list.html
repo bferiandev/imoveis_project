@@ -30,7 +30,7 @@
 
 <div class="card">
   <div class="card-header">
-    <span class="card-header-title">{{ imoveis.count }} imóvel{{ imoveis.count|pluralize:"","is" }} encontrado{{ imoveis.count|pluralize:"","s" }}</span>
+    <span class="card-header-title">{{ imoveis.count }} imóvel(is) encontrado(s)</span>
   </div>
   <div class="table-wrap">
     <table>
@@ -90,11 +90,13 @@
               {% if i.ativo %}
               <a href="/imoveis/{{ i.slug }}/" target="_blank" class="action-btn" title="Ver no site">↗</a>
               {% endif %}
+              {% if request.user.is_staff %}
               <form method="post" action="{% url 'painel:imovel_delete' i.pk %}" style="display:inline"
                     onsubmit="return confirm('Excluir \'{{ i.titulo|escapejs }}\'? Esta ação não pode ser desfeita.')">
                 {% csrf_token %}
                 <button type="submit" class="action-btn danger" title="Excluir">✕</button>
               </form>
+              {% endif %}
             </div>
           </td>
         </tr>

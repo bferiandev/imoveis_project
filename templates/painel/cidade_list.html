@@ -1,0 +1,52 @@
+{% extends "painel/base.html" %}
+{% block title %}Cidades{% endblock %}
+{% block page_title %}Cidades{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'painel:cidade_create' %}" class="topbar-btn btn-gold">＋ Nova Cidade</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Cidade</th>
+          <th>Estado</th>
+          <th>Bairros</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cidade in cidades %}
+        <tr>
+          <td style="font-weight:500">{{ cidade.nome }}</td>
+          <td><span class="badge badge-gray">{{ cidade.estado }}</span></td>
+          <td>{{ cidade.total_bairros }}</td>
+          <td>
+            <div class="actions">
+              <a href="{% url 'painel:cidade_edit' cidade.pk %}" class="action-btn" title="Editar">✎</a>
+              {% if request.user.is_staff %}
+              <form method="post" action="{% url 'painel:cidade_delete' cidade.pk %}"
+                    onsubmit="return confirm('Excluir {{ cidade.nome }}?')" style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="action-btn danger" title="Excluir">✕</button>
+              </form>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" style="text-align:center;padding:3rem;color:#aaa">
+            Nenhuma cidade cadastrada.
+            <a href="{% url 'painel:cidade_create' %}" style="color:#b8974a">Adicionar →</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -5,7 +5,7 @@ from .models import Lead
 class ContatoForm(forms.ModelForm):
     class Meta:
         model = Lead
-        fields = ['nome', 'telefone', 'email', 'interesse', 'mensagem', 'imovel']
+        fields = ['nome', 'telefone', 'email', 'operacao', 'mensagem', 'imovel']
         widgets = {
             'nome': forms.TextInput(attrs={'placeholder': 'Seu nome completo'}),
             'telefone': forms.TextInput(attrs={'placeholder': '(11) 99999-9999'}),

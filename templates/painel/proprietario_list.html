@@ -1,0 +1,65 @@
+{% extends "painel/base.html" %}
+{% block title %}Proprietários{% endblock %}
+{% block page_title %}Proprietários{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'painel:proprietario_create' %}" class="topbar-btn btn-gold">＋ Novo Proprietário</a>
+{% endblock %}
+
+{% block content %}
+<form method="get" class="filter-bar">
+  <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nome ou telefone...">
+  <button type="submit" class="filter-submit">Filtrar</button>
+  {% if q %}<a href="{% url 'painel:proprietario_list' %}" style="font-size:0.78rem;color:#aaa">✕ Limpar</a>{% endif %}
+</form>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Tipo</th>
+          <th>Telefone</th>
+          <th>E-mail</th>
+          <th>Imóveis</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in proprietarios %}
+        <tr>
+          <td>
+            <a href="{% url 'painel:proprietario_detail' p.pk %}" style="font-weight:500;color:#b8974a">
+              {{ p.nome }}
+            </a>
+          </td>
+          <td><span class="badge badge-gray">{{ p.get_tipo_display }}</span></td>
+          <td style="font-size:0.82rem">{{ p.telefone }}</td>
+          <td style="font-size:0.82rem;color:#666">{{ p.email|default:"—" }}</td>
+          <td style="text-align:center;font-weight:600">{{ p.total_imoveis }}</td>
+          <td>
+            <div class="actions">
+              <a href="{% url 'painel:proprietario_detail' p.pk %}" class="action-btn" title="Ver">→</a>
+              <a href="{% url 'painel:proprietario_edit' p.pk %}" class="action-btn" title="Editar">✎</a>
+              <form method="post" action="{% url 'painel:proprietario_delete' p.pk %}"
+                    onsubmit="return confirm('Excluir {{ p.nome }}?')" style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="action-btn danger">✕</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" style="text-align:center;padding:3rem;color:#aaa">
+            Nenhum proprietário cadastrado.
+            <a href="{% url 'painel:proprietario_create' %}" style="color:#b8974a">Adicionar →</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

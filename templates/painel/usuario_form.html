@@ -1,0 +1,81 @@
+{% extends "painel/base.html" %}
+{% block title %}Usuários{% endblock %}
+{% block page_title %}Usuários e Corretores{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'painel:usuario_create' %}" class="topbar-btn btn-gold">＋ Novo Usuário</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Usuário</th>
+          <th>CRECI</th>
+          <th>Time</th>
+          <th>Perfil</th>
+          <th>Fila</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in usuarios %}
+        <tr>
+          <td>
+            <div style="font-weight:500">{{ u.get_full_name|default:u.username }}</div>
+            <div style="font-size:0.72rem;color:#aaa">{{ u.email }}</div>
+          </td>
+          <td style="font-size:0.82rem;color:#666">{{ u.username }}</td>
+          <td style="font-size:0.82rem">{{ u.perfil.creci|default:"—" }}</td>
+          <td>
+            {% if u.perfil.time %}
+            <span style="display:inline-flex;align-items:center;gap:0.4rem;font-size:0.82rem">
+              <span style="width:8px;height:8px;border-radius:50%;background:{{ u.perfil.time.cor }};display:inline-block"></span>
+              {{ u.perfil.time.nome }}
+            </span>
+            {% else %}
+            <span style="color:#ddd">—</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if u.is_staff %}
+            <span class="badge badge-gold">Admin</span>
+            {% else %}
+            <span class="badge badge-gray">Corretor</span>
+            {% endif %}
+          </td>
+          <td style="text-align:center">
+            {% if u.perfil.ativo %}
+            <span style="color:#2d9e6b;font-size:0.8rem">● Ativo</span>
+            {% else %}
+            <span style="color:#ddd;font-size:0.8rem">● Inativo</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="actions">
+              <a href="{% url 'painel:usuario_edit' u.pk %}" class="action-btn" title="Editar">✎</a>
+              {% if u != request.user %}
+              <form method="post" action="{% url 'painel:usuario_delete' u.pk %}"
+                    onsubmit="return confirm('Excluir usuário {{ u.username }}?')" style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="action-btn danger">✕</button>
+              </form>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" style="text-align:center;padding:3rem;color:#aaa">
+            Nenhum usuário cadastrado.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

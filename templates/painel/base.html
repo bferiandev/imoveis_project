@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{% block title %}Painel{% endblock %} — Rafael Moura Imóveis</title>
+<title>{% block title %}Painel{% endblock %} — Ferian e Tavares</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -384,7 +384,7 @@ textarea.form-control { resize: vertical; min-height: 100px; }
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-title">Rafael Moura <span>Imóveis</span></div>
+      <div class="brand-title">Ferian e Tavares</div>
       <div class="brand-sub">Painel Administrativo</div>
     </div>
 
@@ -402,11 +402,49 @@ textarea.form-control { resize: vertical; min-height: 100px; }
         <span class="nav-icon">＋</span> Novo Imóvel
       </a>
 
+      <div class="nav-section">Localização</div>
+      <a href="{% url 'painel:cidade_list' %}" class="nav-item {% if 'cidade' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon">🏙</span> Cidades
+      </a>
+      <a href="{% url 'painel:bairro_list' %}" class="nav-item {% if 'bairro' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon">📍</span> Bairros
+      </a>
+
+      <div class="nav-section">Captação</div>
+      <a href="{% url 'painel:proprietario_list' %}" 
+        class="nav-item {% if 'proprietario' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon">👤</span> Proprietários
+      </a>
+
       <div class="nav-section">Relacionamento</div>
       <a href="{% url 'painel:lead_list' %}" class="nav-item {% if 'lead' in request.resolver_match.url_name %}active{% endif %}">
         <span class="nav-icon">◎</span> Leads
         {% if leads_novos %}<span class="nav-badge">{{ leads_novos }}</span>{% endif %}
       </a>
+
+      {% if request.user.is_staff %}
+      <div class="nav-section">Distribuição</div>
+      <a href="{% url 'painel:time_list' %}"
+        class="nav-item {% if 'time' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon">👥</span> Times
+      </a>
+      <a href="{% url 'painel:regra_list' %}"
+        class="nav-item {% if 'regra' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon">⚡</span> Regras
+      </a>
+      {% endif %}
+
+      {% if request.user.is_staff %}
+      <div class="nav-section">Equipe</div>
+      <a href="{% url 'painel:usuario_list' %}"
+        class="nav-item {% if 'usuario' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon">👥</span> Usuários
+      </a>
+      <a href="{% url 'painel:log_list' %}"
+        class="nav-item {% if 'log' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon">📋</span> Atividades
+      </a>
+      {% endif %}
 
       <div class="nav-section">Site</div>
       <a href="/" target="_blank" class="nav-item">
@@ -420,7 +458,13 @@ textarea.form-control { resize: vertical; min-height: 100px; }
         <div class="footer-name">{{ request.user.get_full_name|default:request.user.username }}</div>
         <div class="footer-role">CRECI {{ BROKER_CRECI }}</div>
       </div>
-      <a href="/django-admin/logout/" class="footer-logout" title="Sair">⏻</a>
+      <form method="post" action="{% url 'logout' %}" style="display:inline">
+        {% csrf_token %}
+        <button type="submit" class="footer-logout" title="Sair" 
+                style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.3);font-size:1rem;padding:0">
+          ⏻
+        </button>
+      </form>
     </div>
   </aside>
 

@@ -1,0 +1,71 @@
+{% extends "painel/base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'painel:time_list' %}" class="topbar-btn btn-outline-dark">← Voltar</a>
+{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:560px">
+  <div class="card-header"><span class="card-header-title">{{ titulo }}</span></div>
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">Nome do time *</label>
+          <input type="text" name="nome" class="form-control"
+                 value="{{ time.nome|default:'' }}" placeholder="Ex: Alto Padrão" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo *</label>
+          <select name="tipo" class="form-control" {% if time %}disabled{% endif %}>
+            <option value="">Selecione...</option>
+            <option value="lancamentos" {% if time.tipo == 'lancamentos' %}selected{% endif %}>Lançamentos</option>
+            <option value="revenda" {% if time.tipo == 'revenda' %}selected{% endif %}>Revenda</option>
+            <option value="locacao" {% if time.tipo == 'locacao' %}selected{% endif %}>Locação</option>
+            <option value="alto_padrao" {% if time.tipo == 'alto_padrao' %}selected{% endif %}>Alto Padrão</option>
+            <option value="comercial" {% if time.tipo == 'comercial' %}selected{% endif %}>Comercial B2B</option>
+            <option value="investidor" {% if time.tipo == 'investidor' %}selected{% endif %}>Investidor</option>
+          </select>
+          {% if time %}<span class="form-help">O tipo não pode ser alterado após a criação.</span>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cor de identificação</label>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <input type="color" name="cor" value="{{ time.cor|default:'#b8974a' }}"
+                   style="width:48px;height:38px;border:1px solid #e8e8e8;cursor:pointer;padding:2px">
+            <input type="text" id="corHex" value="{{ time.cor|default:'#b8974a' }}"
+                   class="form-control" style="flex:1" readonly>
+          </div>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Descrição</label>
+          <textarea name="descricao" class="form-control" rows="3"
+                    placeholder="Descreva o foco e perfil deste time...">{{ time.descricao|default:'' }}</textarea>
+        </div>
+        <div class="form-group full">
+          <div class="form-check">
+            <input type="checkbox" name="ativo" class="form-check-input" id="ativo"
+                   {% if not time or time.ativo %}checked{% endif %}>
+            <label class="form-check-label" for="ativo">Time ativo (recebe leads)</label>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="topbar-btn btn-gold"
+              style="width:100%;justify-content:center;padding:0.9rem;margin-top:1rem">
+        💾 Salvar time
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const colorInput = document.querySelector('input[type="color"]');
+const hexInput = document.getElementById('corHex');
+colorInput.addEventListener('input', () => hexInput.value = colorInput.value);
+</script>
+{% endblock %}
