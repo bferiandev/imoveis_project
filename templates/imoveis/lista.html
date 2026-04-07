@@ -76,7 +76,7 @@
       <a href="?{% if q %}q={{ q }}&{% endif %}{% if tipo %}tipo={{ tipo }}&{% endif %}ordem=-criado_em" class="sort-btn {% if ordem == '-criado_em' or not ordem %}active{% endif %}">Mais recentes</a>
       <a href="?{% if q %}q={{ q }}&{% endif %}{% if tipo %}tipo={{ tipo }}&{% endif %}ordem=preco" class="sort-btn {% if ordem == 'preco' %}active{% endif %}">Menor preço</a>
       <a href="?{% if q %}q={{ q }}&{% endif %}{% if tipo %}tipo={{ tipo }}&{% endif %}ordem=-preco" class="sort-btn {% if ordem == '-preco' %}active{% endif %}">Maior preço</a>
-      <span style="margin-left:auto;font-size:0.78rem;color:var(--gray-500)">{{ imoveis.count }} imóvel{{ imoveis.count|pluralize:"","is" }} encontrado{{ imoveis.count|pluralize:"","s" }}</span>
+      <span style="margin-left:auto;font-size:0.78rem;color:var(--gray-500)">{{ imoveis.count }} imóvel{{ imoveis.count|pluralize:",is" }} encontrado{{ imoveis.count|pluralize:",s" }}</span>
     </div>
 
     {% if imoveis %}
