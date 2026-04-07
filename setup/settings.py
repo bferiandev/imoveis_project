@@ -1,5 +1,5 @@
 """
-Django settings for Rafael Moura Imóveis
+Django settings
 """
 from pathlib import Path
 from decouple import config
@@ -90,8 +90,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 # WhatsApp padrão
 WHATSAPP_NUMBER = config('WHATSAPP_NUMBER', default='5511999999999')
-BROKER_NAME = config('BROKER_NAME', default='Rafael Moura')
-BROKER_CRECI = config('BROKER_CRECI', default='123456-F')
+BROKER_NAME = config('BROKER_NAME', default='Corretor ou Imobiliária')
+BROKER_CRECI = config('BROKER_CRECI', default='SEU_CRECI-F')
 
 LOGIN_URL = '/painel/login/'
 LOGIN_REDIRECT_URL = '/painel/'
@@ -102,6 +102,11 @@ import os
 if os.environ.get('RAILWAY_ENVIRONMENT'):
     DEBUG = False
     ALLOWED_HOSTS = ['*']
+    CSRF_TRUSTED_ORIGINS = [
+    'https://web-production-7618c.up.railway.app',
+    'https://feriantavares.com.br',
+    'https://www.feriantavares.com.br',
+    ]
 
 
 DISTRIBUICAO_LEADS_ATIVA = config('DISTRIBUICAO_LEADS_ATIVA', default=False, cast=bool)
