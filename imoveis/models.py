@@ -151,8 +151,17 @@ class Imovel(models.Model):
     def preco_formatado(self):
         v = float(self.preco)
         if v >= 1_000_000:
-            m = v / 1_000_000
-            return f"R$ {m:,.1f} milhão".replace(',', 'X').replace('.', ',').replace('X', '.')
+            # Verifica se é valor exato em milhões
+            milhoes = v / 1_000_000
+            if milhoes == int(milhoes):
+                # Ex: 2.000.000 → R$ 2 milhões
+                return f"R$ {int(milhoes):,} milhão{'s' if int(milhoes) > 1 else ''}".replace(',', '.')
+            elif v % 100_000 == 0:
+                # Ex: 1.500.000 → R$ 1,5 milhão
+                return f"R$ {milhoes:.1f} milhão".replace('.', ',')
+            else:
+                # Ex: 1.350.000 → R$ 1.350.000
+                return f"R$ {v:,.0f}".replace(',', 'X').replace('.', ',').replace('X', '.')
         return f"R$ {v:,.0f}".replace(',', 'X').replace('.', ',').replace('X', '.')
 
     @property
