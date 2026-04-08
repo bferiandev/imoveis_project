@@ -4,74 +4,223 @@
 
 {% block extra_css %}
 <style>
-.detail-hero{margin-top:60px;position:relative;height:65vh;min-height:450px;overflow:hidden;background:#111}
-.slider-wrap{height:100%;position:relative}
-.slider-slides{display:flex;height:100%;transition:transform 0.5s ease}
-.slider-slides img{min-width:100%;height:100%;object-fit:cover}
-.slider-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(10,10,10,0.6);border:none;color:var(--white);width:48px;height:48px;cursor:pointer;font-size:1.2rem;transition:var(--transition);display:flex;align-items:center;justify-content:center}
-.slider-btn:hover{background:var(--gold);color:var(--black)}
-.slider-prev{left:1.5rem}.slider-next{right:1.5rem}
-.slider-dots{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);display:flex;gap:0.5rem}
-.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.5);cursor:pointer;transition:var(--transition);border:none}
-.dot.active{background:var(--gold)}
-.detail-body{max-width:1200px;margin:0 auto;padding:3rem 2rem}
-.detail-grid{display:grid;grid-template-columns:1fr 360px;gap:3rem}
-.detail-price{font-family:var(--font-serif);font-size:2.2rem;font-weight:500;color:var(--dark);margin-bottom:0.4rem}
-.detail-loc{font-size:0.9rem;color:var(--gray-500);margin-bottom:1.5rem}
-.detail-title{font-family:var(--font-serif);font-size:1.8rem;font-weight:300;color:var(--dark);margin-bottom:1.5rem;line-height:1.3}
-.detail-specs{display:flex;gap:2rem;padding:1.5rem 0;border-top:1px solid var(--gray-200);border-bottom:1px solid var(--gray-200);margin-bottom:2rem;flex-wrap:wrap}
-.spec{display:flex;flex-direction:column;align-items:center;gap:0.3rem}
-.spec-num{font-family:var(--font-serif);font-size:1.5rem;font-weight:500;color:var(--dark)}
-.spec-label{font-size:0.72rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.08em}
-.detail-desc{font-size:0.95rem;line-height:1.8;color:var(--gray-700);margin-bottom:2rem}
-.feats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.6rem}
-.feat-item{display:flex;align-items:center;gap:0.6rem;font-size:0.85rem;color:var(--gray-700);padding:0.5rem 0}
-.feat-item::before{content:'✓';color:var(--gold);font-weight:700}
-.contact-card{background:var(--dark);padding:2rem;position:sticky;top:90px;align-self:start}
-.contact-card h3{font-family:var(--font-serif);font-size:1.3rem;color:var(--white);font-weight:400;margin-bottom:0.5rem}
-.contact-card p{font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:1.5rem}
-.contact-card .btn-primary,.contact-card .btn-wpp{width:100%;justify-content:center;margin-bottom:0.8rem;display:flex}
-.broker-mini{display:flex;align-items:center;gap:1rem;border-top:1px solid rgba(255,255,255,0.1);margin-top:1.5rem;padding-top:1.5rem}
-.broker-photo{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}
-.broker-name{color:var(--white);font-size:0.9rem;font-weight:500}
-.broker-creci{color:var(--gold);font-size:0.72rem}
-.map-wrap{height:280px;background:var(--gray-100);margin-top:2rem;overflow:hidden}
-.map-wrap iframe{width:100%;height:100%;border:none}
-.related-section{background:var(--gray-100);padding:5rem 0}
-.related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2rem;margin-top:2rem}
-@media(max-width:900px){.detail-grid{grid-template-columns:1fr}.contact-card{position:static}}
-@media(max-width:600px){.detail-hero{height:50vh}.feats-grid{grid-template-columns:1fr}}
+/* ── GALERIA ── */
+.gallery-wrap {
+  margin-top: 60px; /* espaço para o nav fixo */
+  background: #0a0a0a;
+}
+.gallery-main {
+  position: relative;
+  height: 70vh; min-height: 500px;
+  overflow: hidden; cursor: zoom-in;
+}
+.gallery-main img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.gallery-main:hover img { transform: scale(1.02); }
+.gallery-counter {
+  position: absolute; bottom: 1.2rem; right: 1.5rem;
+  background: rgba(0,0,0,0.6); color: white;
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 0.08em;
+  padding: 0.35rem 0.8rem; backdrop-filter: blur(4px);
+}
+.gallery-nav-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 48px; height: 48px;
+  background: rgba(10,10,10,0.7); border: none; color: white;
+  font-size: 1.2rem; cursor: pointer; transition: all 0.25s ease;
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.gallery-nav-btn:hover { background: var(--gold); color: #000; }
+.gallery-prev { left: 1.2rem; }
+.gallery-next { right: 1.2rem; }
+.gallery-expand {
+  position: absolute; bottom: 1.2rem; left: 1.5rem;
+  background: rgba(0,0,0,0.6); border: none; color: white;
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 0.08em;
+  padding: 0.35rem 0.9rem; cursor: pointer;
+  backdrop-filter: blur(4px); transition: all 0.25s ease;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.gallery-expand:hover { background: var(--gold); color: #000; }
+.thumbs-strip {
+  display: flex; gap: 4px; overflow-x: auto;
+  background: #0a0a0a; padding: 4px;
+  scrollbar-width: none;
+}
+.thumbs-strip::-webkit-scrollbar { display: none; }
+.thumb {
+  flex-shrink: 0; width: 90px; height: 60px;
+  cursor: pointer; overflow: hidden; opacity: 0.5;
+  transition: opacity 0.2s ease; border: 2px solid transparent;
+}
+.thumb:hover { opacity: 0.8; }
+.thumb.active { opacity: 1; border-color: var(--gold); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ── LIGHTBOX ── */
+.lightbox {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.97);
+  display: flex; flex-direction: column;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.lightbox.open { opacity: 1; pointer-events: all; }
+.lightbox-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.2rem 2rem;
+  position: absolute; top: 0; left: 0; right: 0; z-index: 2;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+}
+.lightbox-title { color: rgba(255,255,255,0.7); font-size: 0.82rem; letter-spacing: 0.08em; }
+.lightbox-counter { color: var(--gold); font-size: 0.82rem; font-weight: 600; }
+.lightbox-close {
+  background: none; border: 1px solid rgba(255,255,255,0.3);
+  color: white; width: 38px; height: 38px; cursor: pointer;
+  font-size: 1rem; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s ease;
+}
+.lightbox-close:hover { background: var(--gold); color: #000; border-color: var(--gold); }
+.lightbox-stage {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.lightbox-img {
+  max-width: 92vw; max-height: 82vh;
+  object-fit: contain;
+  transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.2s ease;
+  user-select: none;
+}
+.lightbox-img.sliding-out { transform: translateX(-60px); opacity: 0; }
+.lightbox-img.sliding-in  { transform: translateX(60px);  opacity: 0; }
+.lb-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 52px; height: 52px;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+  color: white; font-size: 1.3rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s ease; backdrop-filter: blur(4px);
+}
+.lb-nav:hover { background: var(--gold); border-color: var(--gold); color: #000; }
+.lb-prev { left: 1.5rem; }
+.lb-next { right: 1.5rem; }
+.lightbox-thumbs {
+  display: flex; gap: 6px; justify-content: center;
+  padding: 1rem 2rem 1.5rem;
+  overflow-x: auto; scrollbar-width: none;
+  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+  position: absolute; bottom: 0; left: 0; right: 0;
+}
+.lightbox-thumbs::-webkit-scrollbar { display: none; }
+.lb-thumb {
+  flex-shrink: 0; width: 72px; height: 48px;
+  cursor: pointer; overflow: hidden; opacity: 0.4;
+  transition: all 0.2s ease; border: 2px solid transparent;
+}
+.lb-thumb:hover { opacity: 0.7; }
+.lb-thumb.active { opacity: 1; border-color: var(--gold); }
+.lb-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ── DETAIL BODY ── */
+.detail-body { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem; }
+.detail-grid { display: grid; grid-template-columns: 1fr 360px; gap: 3rem; }
+.detail-price { font-family: var(--font-serif); font-size: 2.2rem; font-weight: 500; color: var(--dark); margin-bottom: 0.4rem; }
+.detail-loc { font-size: 0.9rem; color: var(--gray-500); margin-bottom: 1.5rem; }
+.detail-title { font-family: var(--font-serif); font-size: 1.8rem; font-weight: 300; color: var(--dark); margin-bottom: 1.5rem; line-height: 1.3; }
+.detail-specs { display: flex; gap: 2rem; padding: 1.5rem 0; border-top: 1px solid var(--gray-200); border-bottom: 1px solid var(--gray-200); margin-bottom: 2rem; flex-wrap: wrap; }
+.spec { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
+.spec-num { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 500; color: var(--dark); }
+.spec-label { font-size: 0.72rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.08em; }
+.detail-desc { font-size: 0.95rem; line-height: 1.8; color: var(--gray-700); margin-bottom: 2rem; }
+.feats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 0.6rem; }
+.feat-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; color: var(--gray-700); padding: 0.5rem 0; }
+.feat-item::before { content: '✓'; color: var(--gold); font-weight: 700; }
+.contact-card { background: var(--dark); padding: 2rem; position: sticky; top: 90px; align-self: start; }
+.contact-card h3 { font-family: var(--font-serif); font-size: 1.3rem; color: var(--white); font-weight: 400; margin-bottom: 0.5rem; }
+.contact-card p { font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 1.5rem; }
+.contact-card .btn-primary, .contact-card .btn-wpp { width: 100%; justify-content: center; margin-bottom: 0.8rem; display: flex; }
+.broker-mini { display: flex; align-items: center; gap: 1rem; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 1.5rem; padding-top: 1.5rem; }
+.broker-photo { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); }
+.broker-name { color: var(--white); font-size: 0.9rem; font-weight: 500; }
+.broker-creci { color: var(--gold); font-size: 0.72rem; }
+.map-wrap { height: 280px; background: var(--gray-100); margin-top: 2rem; overflow: hidden; }
+.map-wrap iframe { width: 100%; height: 100%; border: none; }
+.related-section { background: var(--gray-100); padding: 5rem 0; }
+.related-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); gap: 2rem; margin-top: 2rem; }
+
+@media(max-width:900px) { .detail-grid { grid-template-columns: 1fr } .contact-card { position: static } }
+@media(max-width:600px) { .gallery-main { height: 50vw; min-height: 260px; } .feats-grid { grid-template-columns: 1fr } .lb-nav { display: none; } }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- SLIDER -->
-<div class="detail-hero">
-  <div class="slider-wrap">
-    <div class="slider-slides" id="sliderSlides">
-      {% for foto in imovel.fotos.all %}
-      <img src="{{ foto.imagem.url }}" alt="{{ foto.legenda|default:imovel.titulo }}">
-      {% empty %}
-      <div style="min-width:100%;height:100%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:5rem;color:#333">⌂</div>
-      {% endfor %}
-    </div>
-    {% if imovel.fotos.count > 1 %}
-    <button class="slider-btn slider-prev" onclick="slideMove(-1)">&#8592;</button>
-    <button class="slider-btn slider-next" onclick="slideMove(1)">&#8594;</button>
-    <div class="slider-dots" id="sliderDots">
-      {% for foto in imovel.fotos.all %}
-      <button class="dot {% if forloop.first %}active{% endif %}" onclick="goSlide({{ forloop.counter0 }})"></button>
-      {% endfor %}
-    </div>
+
+{% with fotos=imovel.fotos.all %}
+
+<!-- GALERIA -->
+<div class="gallery-wrap">
+  <div class="gallery-main" id="galleryMain" onclick="openLightbox(currentSlide)">
+    {% if fotos %}
+      <img id="mainImg" src="{{ fotos.0.imagem.url }}" alt="{{ imovel.titulo }}">
+    {% else %}
+      <div style="width:100%;height:100%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:5rem;color:#333">⌂</div>
     {% endif %}
+    {% if fotos.count > 1 %}
+    <button class="gallery-nav-btn gallery-prev" onclick="event.stopPropagation();slideGallery(-1)">&#8592;</button>
+    <button class="gallery-nav-btn gallery-next" onclick="event.stopPropagation();slideGallery(1)">&#8594;</button>
+    {% endif %}
+    <div class="gallery-counter" id="galleryCounter">1 / {{ fotos.count }}</div>
+    <button class="gallery-expand" onclick="event.stopPropagation();openLightbox(currentSlide)">
+      ⤢ Ver fotos em tela cheia
+    </button>
+  </div>
+
+  {% if fotos.count > 1 %}
+  <div class="thumbs-strip" id="thumbsStrip">
+    {% for foto in fotos %}
+    <div class="thumb {% if forloop.first %}active{% endif %}" onclick="goSlide({{ forloop.counter0 }})">
+      <img src="{{ foto.imagem.url }}" alt="Foto {{ forloop.counter }}">
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-header">
+    <div class="lightbox-title">{{ imovel.titulo|truncatechars:50 }}</div>
+    <div class="lightbox-counter" id="lbCounter">1 / {{ fotos.count }}</div>
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  </div>
+  <div class="lightbox-stage">
+    <button class="lb-nav lb-prev" onclick="slideLightbox(-1)">&#8592;</button>
+    <img id="lbImg" class="lightbox-img" src="{% if fotos %}{{ fotos.0.imagem.url }}{% endif %}" alt="">
+    <button class="lb-nav lb-next" onclick="slideLightbox(1)">&#8594;</button>
+  </div>
+  <div class="lightbox-thumbs" id="lbThumbs">
+    {% for foto in fotos %}
+    <div class="lb-thumb {% if forloop.first %}active{% endif %}" onclick="goLightbox({{ forloop.counter0 }})">
+      <img src="{{ foto.imagem.url }}" alt="">
+    </div>
+    {% endfor %}
   </div>
 </div>
+
+{% endwith %}
 
 <!-- BODY -->
 <div class="detail-body">
   <div class="detail-grid">
     <div>
-      <div class="detail-price">{{ imovel.preco_formatado }}{% if imovel.preco_negociavel %} <span style="font-size:0.9rem;color:var(--gold);font-family:var(--font-sans);font-weight:400">· negociável</span>{% endif %}</div>
+      <div class="detail-price">
+        {{ imovel.preco_formatado }}
+        {% if imovel.preco_negociavel %}<span style="font-size:0.9rem;color:var(--gold);font-family:var(--font-sans);font-weight:400"> · negociável</span>{% endif %}
+      </div>
       <div class="detail-loc">📍 {% if imovel.bairro %}{{ imovel.bairro.nome }}, {% endif %}{% if imovel.cidade %}{{ imovel.cidade.nome }}{% endif %} · {{ imovel.get_tipo_display }}</div>
       <div class="detail-title">{{ imovel.titulo }}</div>
 
@@ -120,7 +269,7 @@
         <h3>Tenho interesse</h3>
         <p>Atendimento personalizado e exclusivo para você.</p>
         <a href="/contato/" class="btn-primary">📅 Agendar visita</a>
-        <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Olá%!%20Tenho%20interesse%20no%20imóvel:%20{{ imovel.titulo|urlencode }}%20-%20{{ imovel.preco_formatado|urlencode }}"
+        <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Olá!%20Tenho%20interesse%20no%20imóvel:%20{{ imovel.titulo|urlencode }}%20-%20{{ imovel.preco_formatado|urlencode }}"
            target="_blank" class="btn-wpp">💬 Falar no WhatsApp</a>
         <div class="broker-mini">
           <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&q=80" alt="{{ BROKER_NAME }}" class="broker-photo">
@@ -160,14 +309,108 @@
 
 {% block extra_js %}
 <script>
-let cur = 0;
-const slides = document.getElementById('sliderSlides');
-const total = slides ? slides.children.length : 0;
-function updateSlider(){
-  if(slides) slides.style.transform = `translateX(-${cur*100}%)`;
-  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+// ── DADOS DAS FOTOS ──
+const photos = [
+  {% for foto in imovel.fotos.all %}
+  "{{ foto.imagem.url }}"{% if not forloop.last %},{% endif %}
+  {% endfor %}
+];
+let currentSlide = 0;
+let lbSlide = 0;
+
+// ── GALERIA PRINCIPAL ──
+function goSlide(i) {
+  currentSlide = i;
+  if (photos.length === 0) return;
+  document.getElementById('mainImg').src = photos[i];
+  document.getElementById('galleryCounter').textContent = (i+1) + ' / ' + photos.length;
+  document.querySelectorAll('.thumb').forEach((t,idx) => t.classList.toggle('active', idx === i));
+  // scroll thumb into view
+  const strip = document.getElementById('thumbsStrip');
+  const thumb = strip?.children[i];
+  if (thumb) thumb.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
 }
-function slideMove(dir){ cur=(cur+dir+total)%total; updateSlider(); }
-function goSlide(i){ cur=i; updateSlider(); }
+
+function slideGallery(dir) {
+  if (photos.length === 0) return;
+  goSlide((currentSlide + dir + photos.length) % photos.length);
+}
+
+// ── LIGHTBOX ──
+function openLightbox(i) {
+  if (photos.length === 0) return;
+  lbSlide = i;
+  updateLightbox();
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function goLightbox(i) {
+  lbSlide = i;
+  updateLightbox();
+}
+
+function slideLightbox(dir) {
+  if (photos.length === 0) return;
+  const img = document.getElementById('lbImg');
+  img.classList.add('sliding-out');
+  setTimeout(() => {
+    lbSlide = (lbSlide + dir + photos.length) % photos.length;
+    img.src = photos[lbSlide];
+    img.classList.remove('sliding-out');
+    img.classList.add('sliding-in');
+    requestAnimationFrame(() => requestAnimationFrame(() => img.classList.remove('sliding-in')));
+    updateLbThumbs();
+    document.getElementById('lbCounter').textContent = (lbSlide+1) + ' / ' + photos.length;
+  }, 180);
+}
+
+function updateLightbox() {
+  document.getElementById('lbImg').src = photos[lbSlide];
+  document.getElementById('lbCounter').textContent = (lbSlide+1) + ' / ' + photos.length;
+  updateLbThumbs();
+}
+
+function updateLbThumbs() {
+  document.querySelectorAll('.lb-thumb').forEach((t,i) => {
+    t.classList.toggle('active', i === lbSlide);
+    if (i === lbSlide) t.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+  });
+}
+
+// ── KEYBOARD ──
+document.addEventListener('keydown', e => {
+  const lb = document.getElementById('lightbox');
+  if (lb.classList.contains('open')) {
+    if (e.key === 'ArrowRight') slideLightbox(1);
+    if (e.key === 'ArrowLeft')  slideLightbox(-1);
+    if (e.key === 'Escape')     closeLightbox();
+  } else {
+    if (e.key === 'ArrowRight') slideGallery(1);
+    if (e.key === 'ArrowLeft')  slideGallery(-1);
+  }
+});
+
+// ── SWIPE ──
+function addSwipe(el, onLeft, onRight) {
+  let sx = 0;
+  el.addEventListener('touchstart', e => sx = e.touches[0].clientX, {passive:true});
+  el.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - sx;
+    if (Math.abs(dx) > 40) { dx < 0 ? onLeft() : onRight(); }
+  });
+}
+addSwipe(document.getElementById('galleryMain'), () => slideGallery(1), () => slideGallery(-1));
+addSwipe(document.getElementById('lightbox'),    () => slideLightbox(1), () => slideLightbox(-1));
+
+// Fechar lightbox clicando fora da imagem
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target.id === 'lightbox') closeLightbox();
+});
 </script>
 {% endblock %}
