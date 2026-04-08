@@ -1,4 +1,4 @@
-# Rafael Moura Imóveis — Guia de Deploy em VPS
+# Guia de Deploy em VPS
 
 ## Estrutura do Projeto
 
@@ -85,7 +85,7 @@ SECRET_KEY=gere-uma-chave-com-python-secrets-token-hex-50
 DEBUG=False
 ALLOWED_HOSTS=seudominio.com.br,www.seudominio.com.br
 WHATSAPP_NUMBER=5511999999999
-BROKER_NAME=Rafael Moura
+BROKER_NAME=Ferian e Tavares
 BROKER_CRECI=123456-F
 ```
 
@@ -109,7 +109,7 @@ Crie o arquivo `/etc/systemd/system/imoveis.service`:
 
 ```ini
 [Unit]
-Description=Rafael Moura Imóveis — Gunicorn
+Description=Ferian e Tavares — Gunicorn
 After=network.target
 
 [Service]

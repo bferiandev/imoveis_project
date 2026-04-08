@@ -1,5 +1,5 @@
 {% extends "core/base.html" %}
-{% block title %}{{ imovel.titulo }} · Rafael Moura Imóveis{% endblock %}
+{% block title %}{{ imovel.titulo }} · Ferian e Tavares{% endblock %}
 {% block meta_desc %}{{ imovel.meta_descricao|default:imovel.descricao|truncatechars:160 }}{% endblock %}
 
 {% block extra_css %}
@@ -120,7 +120,7 @@
         <h3>Tenho interesse</h3>
         <p>Atendimento personalizado e exclusivo para você.</p>
         <a href="/contato/" class="btn-primary">📅 Agendar visita</a>
-        <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Olá%20Rafael!%20Tenho%20interesse%20no%20imóvel:%20{{ imovel.titulo|urlencode }}%20-%20{{ imovel.preco_formatado|urlencode }}"
+        <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Olá%!%20Tenho%20interesse%20no%20imóvel:%20{{ imovel.titulo|urlencode }}%20-%20{{ imovel.preco_formatado|urlencode }}"
            target="_blank" class="btn-wpp">💬 Falar no WhatsApp</a>
         <div class="broker-mini">
           <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&q=80" alt="{{ BROKER_NAME }}" class="broker-photo">
