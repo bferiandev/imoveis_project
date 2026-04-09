@@ -1,0 +1,79 @@
+{% extends "painel/base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'painel:usuario_list' %}" class="topbar-btn btn-outline-dark">← Voltar</a>
+{% endblock %}
+
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-header"><span class="card-header-title">Dados de acesso</span></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div>
+          <label class="field-label">Usuário *</label>
+          <input type="text" name="username" class="field-input" value="{{ usuario.username|default:'' }}" required>
+        </div>
+        <div>
+          <label class="field-label">Senha {% if not usuario %}*{% else %}(deixe em branco para manter){% endif %}</label>
+          <input type="password" name="password" class="field-input">
+        </div>
+        <div>
+          <label class="field-label">Nome</label>
+          <input type="text" name="first_name" class="field-input" value="{{ usuario.first_name|default:'' }}">
+        </div>
+        <div>
+          <label class="field-label">Sobrenome</label>
+          <input type="text" name="last_name" class="field-input" value="{{ usuario.last_name|default:'' }}">
+        </div>
+        <div>
+          <label class="field-label">Email</label>
+          <input type="email" name="email" class="field-input" value="{{ usuario.email|default:'' }}">
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem;padding-top:1.5rem">
+          <input type="checkbox" name="is_staff" id="is_staff" {% if usuario.is_staff %}checked{% endif %}>
+          <label for="is_staff">Perfil Admin</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-header"><span class="card-header-title">Perfil de corretor</span></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div>
+          <label class="field-label">CRECI</label>
+          <input type="text" name="creci" class="field-input" value="{{ perfil.creci|default:'' }}">
+        </div>
+        <div>
+          <label class="field-label">Telefone</label>
+          <input type="text" name="telefone" class="field-input" value="{{ perfil.telefone|default:'' }}">
+        </div>
+        <div style="grid-column:1/-1">
+          <label class="field-label">Bio</label>
+          <textarea name="bio" class="field-input" rows="3">{{ perfil.bio|default:'' }}</textarea>
+        </div>
+        <div>
+          <label class="field-label">Time</label>
+          <select name="time" class="field-input">
+            <option value="">— Sem time —</option>
+            {% for t in times %}
+            <option value="{{ t.pk }}" {% if perfil.time_id == t.pk %}selected{% endif %}>{{ t.nome }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem;padding-top:1.5rem">
+          <input type="checkbox" name="ativo" id="ativo" {% if not usuario or perfil.ativo %}checked{% endif %}>
+          <label for="ativo">Corretor ativo na fila</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="topbar-btn btn-gold">✓ Salvar usuário</button>
+</form>
+{% endblock %}

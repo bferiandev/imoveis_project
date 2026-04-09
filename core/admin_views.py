@@ -542,7 +542,7 @@ def usuario_create(request):
             return redirect('painel:usuario_list')
 
     times = Time.objects.filter(ativo=True)
-    return render(request, 'painel/usuario_form.html', {
+    return render(request, 'painel/usuario_form_create.html', {
         'titulo': 'Novo Usuário', 'times': times
     })
 
@@ -575,7 +575,7 @@ def usuario_edit(request, pk):
         messages.success(request, 'Usuário atualizado!')
         return redirect('painel:usuario_list')
 
-    return render(request, 'painel/usuario_form.html', {
+    return render(request, 'painel/usuario_form_create.html', {
         'titulo': f'Editar: {usuario.get_full_name() or usuario.username}',
         'usuario': usuario, 'perfil': perfil, 'times': times
     })
