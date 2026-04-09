@@ -28,9 +28,9 @@
           </td>
           <td>
             <div style="font-weight:500;font-size:0.82rem">
-              {{ log.usuario.get_full_name|default:log.usuario.username }}
+              {% if log.usuario %}{{ log.usuario.get_full_name|default:log.usuario.username }}{% else %}(removido){% endif %}
             </div>
-            {% if log.usuario.is_staff %}
+            {% if log.usuario and log.usuario.is_staff %}
             <span class="badge badge-gold" style="font-size:0.6rem">Admin</span>
             {% else %}
             <span class="badge badge-gray" style="font-size:0.6rem">Corretor</span>
