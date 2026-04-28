@@ -98,8 +98,10 @@
           <td style="font-size:0.78rem;color:#aaa;white-space:nowrap">{{ doc.criado_em|date:"d/m/Y H:i" }}</td>
           <td>
             <div class="actions">
+              <a href="{{ doc.arquivo.url }}" target="_blank"
+                class="action-btn" title="Visualizar" style="color:#2980b9;border-color:#2980b9">👁</a>
               <a href="{% url 'painel:documento_download' doc.pk %}"
-                 class="action-btn" title="Download" style="color:#2d9e6b;border-color:#2d9e6b">⬇</a>
+                class="action-btn" title="Download" style="color:#2d9e6b;border-color:#2d9e6b">⬇</a>
               <form method="post" action="{% url 'painel:documento_delete' doc.pk %}"
                     onsubmit="return confirm('Excluir {{ doc.nome }}?')" style="display:inline">
                 {% csrf_token %}

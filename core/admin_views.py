@@ -653,7 +653,22 @@ def documento_delete(request, pk):
 
 @login_required
 def documento_download(request, pk):
-    from django.http import HttpResponseRedirect
+    import urllib.request
+    from django.http import HttpResponse
     doc = get_object_or_404(DocumentoImovel, pk=pk)
-    # Redireciona para a URL do arquivo (funciona com qualquer storage)
-    return HttpResponseRedirect(doc.arquivo.url)
+    
+    # Busca o arquivo da URL do Cloudinary e força download
+    url = doc.arquivo.url
+    filename = os.path.basename(doc.arquivo.name)
+    
+    with urllib.request.urlopen(url) as response:
+        content = response.read()
+    
+    import mimetypes
+    content_type, _ = mimetypes.guess_type(filename)
+    if not content_type:
+        content_type = 'application/octet-stream'
+    
+    http_response = HttpResponse(content, content_type=content_type)
+    http_response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return http_response
