@@ -81,7 +81,7 @@ class Imovel(models.Model):
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, default='apartamento')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='disponivel')
     destaque = models.CharField(max_length=20, choices=DESTAQUE_CHOICES, blank=True)
-    codigo = models.CharField('Código', max_length=10, unique=True, blank=True, editable=False)
+    codigo = models.CharField('Código', max_length=10, unique=True, blank=True, null=True, editable=False)
 
     # Localização
     cidade = models.ForeignKey(Cidade, on_delete=models.SET_NULL, null=True)
