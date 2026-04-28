@@ -606,7 +606,7 @@ def log_list(request):
 
 # ─── DOCUMENTOS DOS IMÓVEIS ────────────────────────────────
 
-@@login_required
+@login_required
 def imovel_documentos(request, pk):
     imovel = get_object_or_404(Imovel, pk=pk)
     documentos = imovel.documentos.select_related('enviado_por').all()
