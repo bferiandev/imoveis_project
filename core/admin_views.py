@@ -653,18 +653,7 @@ def documento_delete(request, pk):
 
 @login_required
 def documento_download(request, pk):
-    from django.http import FileResponse
-    import mimetypes
+    from django.http import HttpResponseRedirect
     doc = get_object_or_404(DocumentoImovel, pk=pk)
-    arquivo_path = doc.arquivo.path
-    filename = os.path.basename(doc.arquivo.name)
-    content_type, _ = mimetypes.guess_type(arquivo_path)
-    if not content_type:
-        content_type = 'application/octet-stream'
-    response = FileResponse(
-        doc.arquivo.open('rb'),
-        as_attachment=True,
-        filename=filename,
-        content_type=content_type
-    )
-    return response
+    # Redireciona para a URL do arquivo (funciona com qualquer storage)
+    return HttpResponseRedirect(doc.arquivo.url)
