@@ -26,6 +26,7 @@ class Proprietario(models.Model):
     def __str__(self):
         return self.nome
 
+
 class Cidade(models.Model):
     nome = models.CharField(max_length=100)
     estado = models.CharField(max_length=2, default='SP')
@@ -80,6 +81,7 @@ class Imovel(models.Model):
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, default='apartamento')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='disponivel')
     destaque = models.CharField(max_length=20, choices=DESTAQUE_CHOICES, blank=True)
+    codigo = models.CharField('Código', max_length=10, unique=True, blank=True, editable=False)
 
     # Localização
     cidade = models.ForeignKey(Cidade, on_delete=models.SET_NULL, null=True)
@@ -132,6 +134,32 @@ class Imovel(models.Model):
 
     def __str__(self):
         return self.titulo
+    
+    def _gerar_codigo(self):
+        prefixos = {
+            'apartamento': 'AP',
+            'casa': 'CA',
+            'cobertura': 'CB',
+            'terreno': 'TE',
+            'comercial': 'CM',
+        }
+        prefixo = prefixos.get(self.tipo, 'IM')
+        # Busca o maior número já usado para esse prefixo
+        ultimo = (
+            Imovel.objects
+            .filter(codigo__startswith=prefixo)
+            .order_by('-codigo')
+            .values_list('codigo', flat=True)
+            .first()
+        )
+        if ultimo:
+            try:
+                numero = int(ultimo[len(prefixo):]) + 1
+            except ValueError:
+                numero = 1
+        else:
+            numero = 1
+        return f"{prefixo}{numero:04d}"
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -142,6 +170,8 @@ class Imovel(models.Model):
                 slug = f'{base}-{n}'
                 n += 1
             self.slug = slug
+        if not self.codigo:
+            self.codigo = self._gerar_codigo()
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -194,3 +224,49 @@ class FotoImovel(models.Model):
         if self.principal:
             FotoImovel.objects.filter(imovel=self.imovel, principal=True).exclude(pk=self.pk).update(principal=False)
         super().save(*args, **kwargs)
+
+
+def documento_upload_path(instance, filename):
+    return f'documentos/{instance.imovel.codigo}/{filename}'
+
+
+class DocumentoImovel(models.Model):
+    TIPO_CHOICES = [
+        ('matricula', 'Matrícula'),
+        ('iptu', 'IPTU'),
+        ('condominio', 'Boleto Condomínio'),
+        ('contrato', 'Contrato'),
+        ('planta', 'Planta do Imóvel'),
+        ('outro', 'Outro'),
+    ]
+    imovel = models.ForeignKey(Imovel, on_delete=models.CASCADE, related_name='documentos')
+    tipo = models.CharField('Tipo', max_length=20, choices=TIPO_CHOICES, default='outro')
+    nome = models.CharField('Nome do documento', max_length=200)
+    arquivo = models.FileField('Arquivo', upload_to=documento_upload_path)
+    observacao = models.CharField('Observação', max_length=300, blank=True)
+    enviado_por = models.ForeignKey(
+        'auth.User', on_delete=models.SET_NULL, null=True, blank=True,
+        verbose_name='Enviado por'
+    )
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Documento'
+        verbose_name_plural = 'Documentos'
+        ordering = ['tipo', '-criado_em']
+
+    def __str__(self):
+        return f'{self.get_tipo_display()} — {self.imovel.codigo}'
+
+    @property
+    def extensao(self):
+        return self.arquivo.name.split('.')[-1].upper() if self.arquivo else ''
+
+    @property
+    def icone(self):
+        ext = self.extensao.lower()
+        if ext == 'pdf': return '📄'
+        if ext in ['jpg','jpeg','png','webp']: return '🖼'
+        if ext in ['doc','docx']: return '📝'
+        if ext in ['xls','xlsx']: return '📊'
+        return '📎'

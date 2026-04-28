@@ -56,6 +56,11 @@ urlpatterns = [
     path('usuarios/<int:pk>/editar/', admin_views.usuario_edit, name='usuario_edit'),
     path('usuarios/<int:pk>/excluir/', admin_views.usuario_delete, name='usuario_delete'),
 
+    # Documentos
+    path('imoveis/<int:pk>/documentos/', admin_views.imovel_documentos, name='imovel_documentos'),
+    path('documentos/<int:pk>/excluir/', admin_views.documento_delete, name='documento_delete'),
+    path('documentos/<int:pk>/download/', admin_views.documento_download, name='documento_download'),
+
     # Registros de Atividades (Logs)
     path('atividades/', admin_views.log_list, name='log_list'),
 ]

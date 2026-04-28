@@ -1,0 +1,159 @@
+{% extends "painel/base.html" %}
+{% block title %}Documentos — {{ imovel.titulo }}{% endblock %}
+{% block page_title %}Documentos do imóvel{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'painel:imovel_edit' imovel.pk %}" class="topbar-btn btn-outline-dark">← Editar dados</a>
+<a href="{% url 'painel:imovel_fotos' imovel.pk %}" class="topbar-btn btn-outline-dark">🖼 Fotos</a>
+{% endblock %}
+
+{% block content %}
+
+<!-- CABEÇALHO DO IMÓVEL -->
+<div style="background:#fff;border:1px solid #e8e8e8;padding:1.2rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem">
+  {% if imovel.foto_principal %}
+  <img src="{{ imovel.foto_principal.imagem.url }}" style="width:64px;height:48px;object-fit:cover">
+  {% endif %}
+  <div>
+    <div style="font-weight:600;font-size:0.95rem">{{ imovel.titulo }}</div>
+    <div style="font-size:0.78rem;color:#aaa">
+      <span style="background:#f0ebe0;color:#7a5e1e;padding:0.15rem 0.5rem;font-weight:700;margin-right:0.5rem">{{ imovel.codigo }}</span>
+      {{ imovel.preco_formatado }}
+      {% if imovel.cidade %} · {{ imovel.cidade.nome }}{% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- UPLOAD -->
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-header"><span class="card-header-title">Adicionar documentos</span></div>
+  <div class="card-body">
+    <form method="post" enctype="multipart/form-data" id="docForm">
+      {% csrf_token %}
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem">
+        <div class="form-group">
+          <label class="form-label">Tipo do documento</label>
+          <select name="tipo" class="form-control">
+            {% for val, label in tipo_choices %}
+            <option value="{{ val }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nome (opcional)</label>
+          <input type="text" name="nome" class="form-control" placeholder="Ex: Matrícula atualizada 2026">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Observação</label>
+          <input type="text" name="observacao" class="form-control" placeholder="Ex: Certidão negativa inclusa">
+        </div>
+      </div>
+      <label class="upload-zone" id="docUploadZone">
+        <input type="file" name="arquivos" id="docInput" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp">
+        <div class="upload-icon">📎</div>
+        <div class="upload-text">Clique ou arraste os arquivos aqui</div>
+        <div class="upload-sub">PDF, Word, Excel, Imagens · Múltiplos arquivos permitidos</div>
+      </label>
+      <div id="docPreview" style="margin-top:0.75rem;display:flex;flex-wrap:wrap;gap:0.5rem"></div>
+      <div id="docActions" style="display:none;margin-top:1rem">
+        <button type="submit" class="topbar-btn btn-gold" id="docSubmit">⬆ Enviar documentos</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- LISTA DE DOCUMENTOS -->
+<div class="card">
+  <div class="card-header">
+    <span class="card-header-title">Documentos ({{ documentos.count }})</span>
+    <span style="font-size:0.75rem;color:#aaa">🔒 Visível apenas para corretores logados</span>
+  </div>
+  {% if documentos %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Arquivo</th>
+          <th>Tipo</th>
+          <th>Nome</th>
+          <th>Observação</th>
+          <th>Enviado por</th>
+          <th>Data</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for doc in documentos %}
+        <tr>
+          <td style="font-size:1.4rem;text-align:center;width:50px">{{ doc.icone }}</td>
+          <td><span class="badge badge-gray">{{ doc.get_tipo_display }}</span></td>
+          <td>
+            <div style="font-weight:500;font-size:0.85rem">{{ doc.nome }}</div>
+            <div style="font-size:0.72rem;color:#aaa">{{ doc.extensao }}</div>
+          </td>
+          <td style="font-size:0.82rem;color:#666">{{ doc.observacao|default:"—" }}</td>
+          <td style="font-size:0.78rem;color:#666">
+            {{ doc.enviado_por.get_full_name|default:doc.enviado_por.username|default:"—" }}
+          </td>
+          <td style="font-size:0.78rem;color:#aaa;white-space:nowrap">{{ doc.criado_em|date:"d/m/Y H:i" }}</td>
+          <td>
+            <div class="actions">
+              <a href="{% url 'painel:documento_download' doc.pk %}"
+                 class="action-btn" title="Download" style="color:#2d9e6b;border-color:#2d9e6b">⬇</a>
+              <form method="post" action="{% url 'painel:documento_delete' doc.pk %}"
+                    onsubmit="return confirm('Excluir {{ doc.nome }}?')" style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="action-btn danger" title="Excluir">✕</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:3rem;color:#aaa">
+    <div style="font-size:2.5rem;margin-bottom:0.5rem">📁</div>
+    Nenhum documento anexado ainda.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const docInput = document.getElementById('docInput');
+const docPreview = document.getElementById('docPreview');
+const docActions = document.getElementById('docActions');
+const docSubmit = document.getElementById('docSubmit');
+const docZone = document.getElementById('docUploadZone');
+
+docInput.addEventListener('change', showDocPreview);
+docZone.addEventListener('dragover', e => { e.preventDefault(); docZone.classList.add('dragover'); });
+docZone.addEventListener('dragleave', () => docZone.classList.remove('dragover'));
+docZone.addEventListener('drop', e => {
+  e.preventDefault(); docZone.classList.remove('dragover');
+  docInput.files = e.dataTransfer.files; showDocPreview();
+});
+
+function showDocPreview() {
+  const files = Array.from(docInput.files);
+  docPreview.innerHTML = '';
+  if (!files.length) { docActions.style.display = 'none'; return; }
+  docActions.style.display = 'block';
+  docSubmit.textContent = `⬆ Enviar ${files.length} arquivo${files.length > 1 ? 's' : ''}`;
+  files.forEach(f => {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:0.4rem 0.8rem;background:#f4f4f4;border:1px solid #e8e8e8;font-size:0.78rem;display:flex;align-items:center;gap:0.4rem';
+    div.innerHTML = `📎 ${f.name}`;
+    docPreview.appendChild(div);
+  });
+}
+
+document.getElementById('docForm').addEventListener('submit', () => {
+  docSubmit.textContent = '⏳ Enviando...';
+  docSubmit.disabled = true;
+});
+</script>
+{% endblock %}

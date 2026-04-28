@@ -90,6 +90,7 @@
               {% if i.ativo %}
               <a href="/imoveis/{{ i.slug }}/" target="_blank" class="action-btn" title="Ver no site">↗</a>
               {% endif %}
+              <a href="{% url 'painel:imovel_documentos' i.pk %}" class="action-btn" title="Documentos">📁</a>
               {% if request.user.is_staff %}
               <form method="post" action="{% url 'painel:imovel_delete' i.pk %}" style="display:inline"
                     onsubmit="return confirm('Excluir \'{{ i.titulo|escapejs }}\'? Esta ação não pode ser desfeita.')">

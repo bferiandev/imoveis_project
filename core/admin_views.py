@@ -13,6 +13,8 @@ from imoveis.forms import ImovelForm, FotoImovelFormSet
 from imoveis.models import Proprietario
 from leads.models import Lead
 from imoveis.models import Cidade, Bairro
+from imoveis.models import Imovel, FotoImovel, DocumentoImovel
+import os
 import json
 
 
@@ -600,3 +602,55 @@ def usuario_delete(request, pk):
 def log_list(request):
     logs = LogAtividade.objects.select_related('usuario').order_by('-criado_em')[:200]
     return render(request, 'painel/log_list.html', {'logs': logs})
+
+
+# ─── DOCUMENTOS DOS IMÓVEIS ────────────────────────────────
+
+@login_required
+def imovel_documentos(request, pk):
+    imovel = get_object_or_404(Imovel, pk=pk)
+    documentos = imovel.documentos.select_related('enviado_por').all()
+
+    if request.method == 'POST':
+        arquivos = request.FILES.getlist('arquivos')
+        tipo = request.POST.get('tipo', 'outro')
+        observacao = request.POST.get('observacao', '').strip()
+        for arquivo in arquivos:
+            nome = request.POST.get('nome', '').strip() or arquivo.name
+            DocumentoImovel.objects.create(
+                imovel=imovel,
+                tipo=tipo,
+                nome=nome,
+                arquivo=arquivo,
+                observacao=observacao,
+                enviado_por=request.user
+            )
+        registrar_log(request, 'editar', 'Documento',
+                     f'Adicionou {len(arquivos)} documento(s) em "{imovel.titulo}"', imovel.pk)
+        messages.success(request, f'{len(arquivos)} documento(s) adicionado(s)!')
+        return redirect('painel:imovel_documentos', pk=pk)
+
+    return render(request, 'painel/imovel_documentos.html', {
+        'imovel': imovel,
+        'documentos': documentos,
+        'tipo_choices': DocumentoImovel.TIPO_CHOICES,
+    })
+
+
+@login_required
+@require_POST
+def documento_delete(request, pk):
+    doc = get_object_or_404(DocumentoImovel, pk=pk)
+    imovel_pk = doc.imovel.pk
+    doc.arquivo.delete(save=False)
+    doc.delete()
+    messages.success(request, 'Documento removido.')
+    return redirect('painel:imovel_documentos', pk=imovel_pk)
+
+
+@login_required
+def documento_download(request, pk):
+    from django.http import FileResponse
+    doc = get_object_or_404(DocumentoImovel, pk=pk)
+    response = FileResponse(doc.arquivo.open('rb'), as_attachment=True, filename=os.path.basename(doc.arquivo.name))
+    return response

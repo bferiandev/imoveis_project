@@ -16,7 +16,7 @@
     <div style="display:flex;flex-direction:column;gap:1.5rem">
 
       <!-- Identificação -->
-      <div class="card">
+      <div class="card">  
         <div class="card-header"><span class="card-header-title">Identificação</span></div>
         <div class="card-body">
           <div class="form-grid">
@@ -95,6 +95,10 @@
           </div>
         </div>
       </div>
+
+      {% if imovel %}
+      <a href="{% url 'painel:imovel_documentos' imovel.pk %}" class="topbar-btn btn-outline-dark">📁 Documentos</a>
+      {% endif %}
 
       <!-- SEO -->
       <div class="card">
