@@ -606,7 +606,7 @@ def log_list(request):
 
 # ─── DOCUMENTOS DOS IMÓVEIS ────────────────────────────────
 
-@login_required
+@@login_required
 def imovel_documentos(request, pk):
     imovel = get_object_or_404(Imovel, pk=pk)
     documentos = imovel.documentos.select_related('enviado_por').all()
@@ -615,16 +615,19 @@ def imovel_documentos(request, pk):
         arquivos = request.FILES.getlist('arquivos')
         tipo = request.POST.get('tipo', 'outro')
         observacao = request.POST.get('observacao', '').strip()
+        nome_base = request.POST.get('nome', '').strip()
+
         for arquivo in arquivos:
-            nome = request.POST.get('nome', '').strip() or arquivo.name
+            nome_display = nome_base or arquivo.name
             DocumentoImovel.objects.create(
                 imovel=imovel,
                 tipo=tipo,
-                nome=nome,
+                nome=nome_display,
                 arquivo=arquivo,
                 observacao=observacao,
                 enviado_por=request.user
             )
+
         registrar_log(request, 'editar', 'Documento',
                      f'Adicionou {len(arquivos)} documento(s) em "{imovel.titulo}"', imovel.pk)
         messages.success(request, f'{len(arquivos)} documento(s) adicionado(s)!')
@@ -651,6 +654,17 @@ def documento_delete(request, pk):
 @login_required
 def documento_download(request, pk):
     from django.http import FileResponse
+    import mimetypes
     doc = get_object_or_404(DocumentoImovel, pk=pk)
-    response = FileResponse(doc.arquivo.open('rb'), as_attachment=True, filename=os.path.basename(doc.arquivo.name))
+    arquivo_path = doc.arquivo.path
+    filename = os.path.basename(doc.arquivo.name)
+    content_type, _ = mimetypes.guess_type(arquivo_path)
+    if not content_type:
+        content_type = 'application/octet-stream'
+    response = FileResponse(
+        doc.arquivo.open('rb'),
+        as_attachment=True,
+        filename=filename,
+        content_type=content_type
+    )
     return response
