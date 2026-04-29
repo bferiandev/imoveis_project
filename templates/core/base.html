@@ -57,8 +57,12 @@ section{padding:6rem 0}
 .section-sub{font-size:0.95rem;font-weight:300;color:var(--gray-500);max-width:500px;line-height:1.7}
 .divider{width:40px;height:1px;background:var(--gold);margin:1.5rem 0}
 
-.preview-grid:empty {
-  display: none;
+/* ── PREVIEW THUMBNAILS ── */
+.preview-grid { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
+.preview-grid:empty { display: none; } /* ← ADICIONAR ESTA LINHA */
+.preview-thumb {
+  position: relative; width: 100px; height: 75px;
+  border: 1px solid var(--gray-200); overflow: hidden;
 }
 
 /* MESSAGES */
