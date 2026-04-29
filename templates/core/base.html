@@ -57,6 +57,10 @@ section{padding:6rem 0}
 .section-sub{font-size:0.95rem;font-weight:300;color:var(--gray-500);max-width:500px;line-height:1.7}
 .divider{width:40px;height:1px;background:var(--gold);margin:1.5rem 0}
 
+.preview-grid:empty {
+  display: none;
+}
+
 /* MESSAGES */
 .django-messages{position:fixed;top:80px;right:2rem;z-index:2000;display:flex;flex-direction:column;gap:0.5rem}
 .django-msg{padding:1rem 1.5rem;font-size:0.85rem;font-weight:500;border-left:3px solid var(--gold);background:var(--white);box-shadow:0 4px 20px rgba(0,0,0,0.1);animation:slideIn 0.3s ease}
