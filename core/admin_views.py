@@ -664,28 +664,31 @@ def documento_delete(request, pk):
 
 @login_required
 def documento_download(request, pk):
-    import urllib.request
-    import mimetypes
-    from django.http import HttpResponse
-    
+    from django.http import HttpResponseRedirect
     doc = get_object_or_404(DocumentoImovel, pk=pk)
+    
+    # Pega a URL base do Cloudinary e adiciona fl_attachment para forçar download com nome correto
     url = doc.arquivo.url
+    nome = doc.nome or 'documento'
     
-    with urllib.request.urlopen(url) as response:
-        content = response.read()
-        content_type = response.headers.get('Content-Type', 'application/octet-stream').split(';')[0]
-    
-    # Monta o nome do arquivo com extensão correta
-    filename = os.path.basename(doc.arquivo.name)
-    
-    # Se o arquivo não tem extensão, adiciona baseado no content-type
-    if '.' not in os.path.basename(filename):
-        ext = mimetypes.guess_extension(content_type)
-        if ext:
-            # .jpeg → .jpg
+    # Detecta extensão pela URL ou content-type
+    import mimetypes
+    ext = ''
+    if '.' in os.path.basename(doc.arquivo.name):
+        ext = '.' + doc.arquivo.name.rsplit('.', 1)[-1]
+    else:
+        # Busca o content-type real do arquivo no Cloudinary
+        import urllib.request
+        with urllib.request.urlopen(url) as resp:
+            ct = resp.headers.get('Content-Type', '').split(';')[0]
+            ext = mimetypes.guess_extension(ct) or ''
             ext = ext.replace('.jpeg', '.jpg').replace('.jpe', '.jpg')
-            filename = f"{doc.nome or filename}{ext}"
     
-    http_response = HttpResponse(content, content_type=content_type)
-    http_response['Content-Disposition'] = f'attachment; filename="{filename}"'
-    return http_response
+    filename = f"{nome}{ext}"
+    
+    # Adiciona fl_attachment na URL do Cloudinary para forçar download
+    # Transforma: /image/upload/v1/... → /image/upload/fl_attachment:nome/v1/...
+    if 'cloudinary.com' in url:
+        url = url.replace('/upload/', f'/upload/fl_attachment:{filename}/')
+    
+    return HttpResponseRedirect(url)
