@@ -654,20 +654,26 @@ def documento_delete(request, pk):
 @login_required
 def documento_download(request, pk):
     import urllib.request
+    import mimetypes
     from django.http import HttpResponse
-    doc = get_object_or_404(DocumentoImovel, pk=pk)
     
-    # Busca o arquivo da URL do Cloudinary e força download
+    doc = get_object_or_404(DocumentoImovel, pk=pk)
     url = doc.arquivo.url
-    filename = os.path.basename(doc.arquivo.name)
     
     with urllib.request.urlopen(url) as response:
         content = response.read()
+        content_type = response.headers.get('Content-Type', 'application/octet-stream').split(';')[0]
     
-    import mimetypes
-    content_type, _ = mimetypes.guess_type(filename)
-    if not content_type:
-        content_type = 'application/octet-stream'
+    # Monta o nome do arquivo com extensão correta
+    filename = os.path.basename(doc.arquivo.name)
+    
+    # Se o arquivo não tem extensão, adiciona baseado no content-type
+    if '.' not in os.path.basename(filename):
+        ext = mimetypes.guess_extension(content_type)
+        if ext:
+            # .jpeg → .jpg
+            ext = ext.replace('.jpeg', '.jpg').replace('.jpe', '.jpg')
+            filename = f"{doc.nome or filename}{ext}"
     
     http_response = HttpResponse(content, content_type=content_type)
     http_response['Content-Disposition'] = f'attachment; filename="{filename}"'
