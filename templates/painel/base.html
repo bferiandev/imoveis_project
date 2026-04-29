@@ -315,6 +315,11 @@ textarea.form-control { resize: vertical; min-height: 100px; }
 .upload-text { font-size: 0.88rem; color: var(--gray-600); }
 .upload-sub { font-size: 0.75rem; color: var(--gray-400); margin-top: 0.3rem; }
 
+select.form-control:focus,
+select.form-select:focus {
+  outline: none;
+}
+
 /* ── PHOTO GRID ── */
 .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
 .photo-item {
