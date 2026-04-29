@@ -619,6 +619,17 @@ def imovel_documentos(request, pk):
 
         for arquivo in arquivos:
             nome_display = nome_base or arquivo.name
+
+            # Garante extensão correta baseada no content-type
+            import mimetypes
+            nome_arquivo = arquivo.name
+            if '.' not in os.path.basename(nome_arquivo):
+                ext = mimetypes.guess_extension(arquivo.content_type)
+                if ext:
+                    ext = ext.replace('.jpeg', '.jpg').replace('.jpe', '.jpg')
+                    # Renomeia o arquivo internamente
+                    arquivo.name = f"{nome_arquivo}{ext}"
+
             DocumentoImovel.objects.create(
                 imovel=imovel,
                 tipo=tipo,
