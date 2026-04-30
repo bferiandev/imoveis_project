@@ -64,7 +64,11 @@ def imovel_list(request):
     tipo = request.GET.get('tipo', '')
     status = request.GET.get('status', '')
     if q:
-        qs = qs.filter(Q(titulo__icontains=q) | Q(cidade__nome__icontains=q))
+        qs = qs.filter(
+            Q(titulo__icontains=q) |
+            Q(cidade__nome__icontains=q) |
+            Q(codigo__icontains=q)
+        )
     if tipo:
         qs = qs.filter(tipo=tipo)
     if status:
