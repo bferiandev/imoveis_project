@@ -210,6 +210,7 @@
 </form>
 {% endblock %}
 
+
 {% block extra_js %}
 <script>
 // Meta description counter
@@ -256,52 +257,5 @@ function showPreviews() {
     reader.readAsDataURL(file);
   });
 }
-
-// ── Máscara monetária R$ ────────────────────────────────────────────────────
-function aplicarMascaraMonetaria(campo) {
-  if (!campo) return;
-
-  function formatar(digits) {
-    if (!digits) return '';
-    digits = digits.padStart(3, '0');
-    const centavos = digits.slice(-2);
-    const inteiro = digits.slice(0, -2).replace(/^0+/, '') || '0';
-    const inteiroFmt = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    return inteiroFmt + ',' + centavos;
-  }
-
-  // Formata ao digitar
-  campo.addEventListener('input', function () {
-    const digits = this.value.replace(/\D/g, '');
-    this.value = formatar(digits);
-  });
-
-  // Antes do submit: converte "3.000.000,00" → "3000000.00" para o Django
-  const form = campo.closest('form');
-  if (form) {
-    form.addEventListener('submit', function () {
-      const raw = campo.value.replace(/\./g, '').replace(',', '.');
-      const n = parseFloat(raw);
-      campo.value = (!isNaN(n) && n > 0) ? n.toFixed(2) : '';
-    });
-  }
-
-  // Ao carregar (modo edição): formata o valor que veio do banco
-  const s = campo.value.trim();
-  if (s && s !== '0' && s !== '0.00') {
-    const n = parseFloat(s.replace(',', '.'));
-    if (!isNaN(n) && n > 0) {
-      campo.value = formatar(Math.round(n * 100).toString());
-    } else {
-      campo.value = '';
-    }
-  } else {
-    campo.value = '';
-  }
-}
-
-aplicarMascaraMonetaria(document.getElementById('{{ form.preco.id_for_label }}'));
-aplicarMascaraMonetaria(document.getElementById('{{ form.condominio.id_for_label }}'));
-aplicarMascaraMonetaria(document.getElementById('{{ form.iptu.id_for_label }}'));
 </script>
 {% endblock %}
