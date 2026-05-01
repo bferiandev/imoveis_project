@@ -261,9 +261,9 @@ function showPreviews() {
 function aplicarMascaraMonetaria(campo) {
   if (!campo) return;
 
-  function formatar(valor) {
-    let digits = valor.replace(/\D/g, '');
-    if (!digits) return '';
+  function formatar(digits) {
+    // Recebe apenas dígitos
+    if (!digits || digits === '0' || digits === '00') return '';
     digits = digits.padStart(3, '0');
     const centavos = digits.slice(-2);
     const inteiro = digits.slice(0, -2).replace(/^0+/, '') || '0';
@@ -271,9 +271,10 @@ function aplicarMascaraMonetaria(campo) {
     return `${inteiroFmt},${centavos}`;
   }
 
-  // Formata ao digitar
+  // Formata ao digitar — extrai só dígitos antes de formatar
   campo.addEventListener('input', function () {
-    this.value = formatar(this.value);
+    const digits = this.value.replace(/\D/g, '');
+    this.value = formatar(digits);
   });
 
   // Antes do submit: converte "3.000.000,00" → "3000000.00" para o Django
@@ -281,19 +282,27 @@ function aplicarMascaraMonetaria(campo) {
   if (form) {
     form.addEventListener('submit', function () {
       const raw = campo.value.replace(/\./g, '').replace(',', '.');
-      if (raw && !isNaN(parseFloat(raw))) {
-        campo.value = parseFloat(raw).toFixed(2);
+      const numero = parseFloat(raw);
+      if (!isNaN(numero) && numero > 0) {
+        campo.value = numero.toFixed(2);
+      } else {
+        campo.value = '';
       }
     });
   }
 
   // Ao carregar página em modo edição: formata o valor que veio do banco
-  if (campo.value) {
-    const numero = parseFloat(campo.value.replace(',', '.'));
-    if (!isNaN(numero)) {
+  const valorInicial = campo.value.trim();
+  if (valorInicial && valorInicial !== '0' && valorInicial !== '0.00') {
+    const numero = parseFloat(valorInicial.replace(',', '.'));
+    if (!isNaN(numero) && numero > 0) {
       const digits = Math.round(numero * 100).toString();
       campo.value = formatar(digits);
+    } else {
+      campo.value = '';
     }
+  } else {
+    campo.value = '';
   }
 }
 
