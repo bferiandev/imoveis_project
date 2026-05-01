@@ -256,5 +256,49 @@ function showPreviews() {
     reader.readAsDataURL(file);
   });
 }
+
+// ── Máscara monetária R$ ────────────────────────────────────────────────────
+function aplicarMascaraMonetaria(campo) {
+  if (!campo) return;
+
+  function formatar(valor) {
+    let digits = valor.replace(/\D/g, '');
+    if (!digits) return '';
+    digits = digits.padStart(3, '0');
+    const centavos = digits.slice(-2);
+    const inteiro = digits.slice(0, -2).replace(/^0+/, '') || '0';
+    const inteiroFmt = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return `${inteiroFmt},${centavos}`;
+  }
+
+  // Formata ao digitar
+  campo.addEventListener('input', function () {
+    this.value = formatar(this.value);
+  });
+
+  // Antes do submit: converte "3.000.000,00" → "3000000.00" para o Django
+  const form = campo.closest('form');
+  if (form) {
+    form.addEventListener('submit', function () {
+      const raw = campo.value.replace(/\./g, '').replace(',', '.');
+      if (raw && !isNaN(parseFloat(raw))) {
+        campo.value = parseFloat(raw).toFixed(2);
+      }
+    });
+  }
+
+  // Ao carregar página em modo edição: formata o valor que veio do banco
+  if (campo.value) {
+    const numero = parseFloat(campo.value.replace(',', '.'));
+    if (!isNaN(numero)) {
+      const digits = Math.round(numero * 100).toString();
+      campo.value = formatar(digits);
+    }
+  }
+}
+
+aplicarMascaraMonetaria(document.getElementById('{{ form.preco.id_for_label }}'));
+aplicarMascaraMonetaria(document.getElementById('{{ form.condominio.id_for_label }}'));
+aplicarMascaraMonetaria(document.getElementById('{{ form.iptu.id_for_label }}'));
 </script>
 {% endblock %}
