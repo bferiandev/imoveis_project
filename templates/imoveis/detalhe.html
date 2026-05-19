@@ -222,6 +222,15 @@
         {% if imovel.preco_negociavel %}<span style="font-size:0.9rem;color:var(--gold);font-family:var(--font-sans);font-weight:400"> · negociável</span>{% endif %}
       </div>
       <div class="detail-loc">📍 {% if imovel.bairro %}{{ imovel.bairro.nome }}, {% endif %}{% if imovel.cidade %}{{ imovel.cidade.nome }}{% endif %} · {{ imovel.get_tipo_display }}</div>
+      {% if imovel.condominio_fechado %}
+      <div style="display:inline-flex;align-items:center;gap:0.4rem;margin-top:0.6rem;
+                  padding:0.3rem 0.9rem;background:rgba(184,151,74,0.12);
+                  border:1px solid var(--gold);font-size:0.75rem;
+                  font-family:var(--font-sans);letter-spacing:0.06em;
+                  color:var(--gold);text-transform:uppercase">
+        🏘 Casa em Condomínio Fechado no Interior
+      </div>
+      {% endif %}
       <div class="detail-title">{{ imovel.titulo }}</div>
 
       <div class="detail-specs">
@@ -233,8 +242,6 @@
         {% if imovel.area_construida %}<div class="spec"><span class="spec-num">{{ imovel.area_construida }}</span><span class="spec-label">m² construído</span></div>{% endif %}
       </div>
 
-      <p class="detail-desc">{{ imovel.descricao }}</p>
-
       {% if imovel.lista_diferenciais %}
       <div style="margin-bottom:2rem">
         <h3 style="font-family:var(--font-serif);font-size:1.2rem;font-weight:500;margin-bottom:1rem;color:var(--dark)">Características</h3>
@@ -245,6 +252,8 @@
         </div>
       </div>
       {% endif %}
+
+      <p class="detail-desc">{{ imovel.descricao }}</p>
 
       {% if imovel.condominio or imovel.iptu %}
       <div style="padding:1.5rem;background:var(--gray-100);margin-bottom:2rem">

@@ -88,6 +88,7 @@ class Imovel(models.Model):
     bairro = models.ForeignKey(Bairro, on_delete=models.SET_NULL, null=True, blank=True)
     endereco = models.CharField('Endereço', max_length=300, blank=True)
     cep = models.CharField('CEP', max_length=9, blank=True)
+    condominio_fechado = models.BooleanField(default=False, verbose_name="Condomínio fechado")
 
     # Preço
     preco = models.DecimalField('Preço (R$)', max_digits=14, decimal_places=2)
